@@ -1,0 +1,88 @@
+/* 1. Import Premium Typography MUST be at the top */
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Luxury Color Palette from your Reference Image */
+  --bg-chocolate: #1a0f0a;     /* Main deep background */
+  --sidebar-dark: #140a05;     /* Even darker sidebar */
+  --accent-orange: #e65100;    /* The "Search" button orange */
+  --luxury-gold: #d4b08c;      /* Subtle gold for text/borders */
+}
+
+@layer base {
+  html {
+    -webkit-tap-highlight-color: transparent;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    /* Apply the Deep Chocolate background globally */
+    @apply bg-[#1a0f0a] text-white antialiased;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+  }
+
+  /* Headings use the elegant Serif font from your image */
+  h1, h2, h3, h4, .font-serif {
+    font-family: 'Playfair Display', serif;
+  }
+}
+
+@layer components {
+  /* High-end Glassmorphism for cards */
+  .glass-morphism {
+    @apply bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl;
+  }
+
+  /* Smoother, subtle hover for luxury feel */
+  .card-hover {
+    @apply transition-all duration-500 hover:bg-white/10 hover:border-white/20 hover:-translate-y-1;
+  }
+
+  /* The "Search" button style from your reference image */
+  .btn-premium {
+    @apply bg-[#e65100] text-white font-bold py-3 px-8 rounded-xl 
+           transition-all duration-300 hover:bg-[#ff5d00] hover:shadow-[0_0_20px_rgba(230,81,0,0.4)];
+  }
+}
+
+@layer utilities {
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+  /* Gradient for the "Premium Consultant" card */
+  .bg-luxury-gradient {
+    background: linear-gradient(135deg, #e65100 0%, #802b00 100%);
+  }
+}
+
+/* 2. Custom Luxury Scrollbar */
+::-webkit-scrollbar {
+  width: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: #140a05;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #3d2317;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #e65100;
+}
+
+/* 3. Animation for page transitions */
+.animate-fade-in {
+  animation: fadeIn 0.8s ease-out forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}

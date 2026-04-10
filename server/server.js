@@ -1,94 +1,133 @@
-// import app from './app.js';
-// import connectDB from './config/db.js';
-// import env from './config/env.js';
-// import startRewardCron from './jobs/rewardCron.js';
-// import startCleanupJob from './jobs/cleanup.js';
+import express from "express";
+import cors from "cors";
+import helmet from "helmet";
+import morgan from "morgan";
+import path from "path";
+import { fileURLToPath } from "url";
 
-// /**
-//  * UTKARSH HOME - SERVER BOOTSTRAP
-//  * This file connects all pieces: DB, Cron Jobs, and Express.
-//  */
+import connectDB from "./config/db.js";
+import env from "./config/env.js";
 
-// const startServer = async () => {
-//     try {
-//         // 1. Connect to MongoDB
-//         await connectDB();
+// Routes
+import authRoutes from "./routes/authRoutes.js";
+import userRoutes from "./routes/userRoutes.js";
+import dashboardRoutes from "./routes/dashboardRoutes.js";
+import dealRoutes from "./routes/dealRoutes.js";
+import rewardRoutes from "./routes/rewardRoutes.js";
+import referralRoutes from "./routes/referralRoutes.js";
+import reportRoutes from "./routes/reportRoutes.js";
+import supportRoutes from "./routes/supportRoutes.js";
 
-//         // 2. Initialize Background Jobs
-//         // These run independently to handle rewards and database cleanup
-//         startRewardCron();
-//         startCleanupJob();
+// Middlewares
+import { notFound, errorHandler } from "./middleware/errorMiddleware.js";
 
-//         // 3. Start Listening for requests
-//         const PORT = env.PORT || 5000;
-//         const server = app.listen(PORT, () => {
-//             console.log(`
-//           🚀 Server is Running on port
-//           📡 Port: ${PORT}
-//           🌍 Mode: ${env.NODE_ENV}
-//           🛠️  Background Jobs: ACTIVE
-//             `); 
-//         });
+// Jobs
+import startRewardCron from "./jobs/rewardCron.js";
+import startCleanupJob from "./jobs/cleanup.js";
 
-//         // 4. Handle Global "Unhandled Rejections" 
-//         // (Prevents the app from crashing silently)
-//         process.on('unhandledRejection', (err) => {
-//             console.error(`❌ Unhandled Rejection: ${err.message}`);
-//             // Close server & exit process
-//             server.close(() => process.exit(1));
-//         });
+// Fix __dirname (ES Modules)
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-//     } catch (error) {
-//         console.error(`❌ Failed to start server: ${error.message}`);
-//         process.exit(1);
-//     }
-// };
-
-// startServer();
-
-
-import app from './app.js';
-import connectDB from './config/db.js';
-import env from './config/env.js';
-import startRewardCron from './jobs/rewardCron.js';
-import startCleanupJob from './jobs/cleanup.js';
+const app = express();
 
 /**
- * UTKARSH HOME - SERVER BOOTSTRAP
- * Connects Database, Background Jobs, and Express.
+ * ===============================
+ * 1. GLOBAL MIDDLEWARE
+ * ===============================
+ */
+
+// Security
+app.use(
+  helmet({
+    crossOriginResourcePolicy: false,
+  })
+);
+
+// CORS (IMPORTANT)
+app.use(
+  cors({
+    origin: process.env.CLIENT_URL || "http://localhost:5173",
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE"],
+  })
+);
+
+// Logging
+if (process.env.NODE_ENV === "development") {
+  app.use(morgan("dev"));
+}
+
+// Body parser
+app.use(express.json({ limit: "10mb" }));
+app.use(express.urlencoded({ extended: true }));
+
+// Static folder
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+
+/**
+ * ===============================
+ * 2. ROUTES
+ * ===============================
+ */
+
+app.use("/api/v1/auth", authRoutes);
+app.use("/api/v1/users", userRoutes);
+app.use("/api/v1/dashboard", dashboardRoutes);
+app.use("/api/v1/deals", dealRoutes);
+app.use("/api/v1/rewards", rewardRoutes);
+app.use("/api/v1/referrals", referralRoutes);
+app.use("/api/v1/reports", reportRoutes);
+app.use("/api/v1/support", supportRoutes);
+
+// Health check
+app.get("/health", (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: "Utkarsh Home Server is running 🚀",
+  });
+});
+
+/**
+ * ===============================
+ * 3. ERROR HANDLING
+ * ===============================
+ */
+app.use(notFound);
+app.use(errorHandler);
+
+/**
+ * ===============================
+ * 4. START SERVER
+ * ===============================
  */
 
 const startServer = async () => {
-    try {
-        // 1. Connect to MongoDB (Ensure your URI is in your .env file)
-        await connectDB();
-        console.log('📦 Database Connected Successfully');
+  try {
+    // DB connect
+    await connectDB();
+    console.log("📦 MongoDB Connected");
 
-        // 2. Initialize Background Jobs
-        startRewardCron();
-        startCleanupJob();
+    // Start background jobs
+    startRewardCron();
+    startCleanupJob();
 
-        // 3. Start Listening
-        const PORT = env.PORT || 5000;
-        const server = app.listen(PORT, () => {
-            console.log(`
-          🚀 UTKARSH HOME SERVER READY
-          📡 Port: ${PORT}
-          🌍 Mode: ${env.NODE_ENV || 'development'}
-          🛠️  Background Jobs: ACTIVE
-            `); 
-        });
+    const PORT = env.PORT || 5000;
 
-        // 4. Graceful Shutdown & Error Handling
-        process.on('unhandledRejection', (err) => {
-            console.error(`❌ Unhandled Rejection: ${err.message}`);
-            server.close(() => process.exit(1));
-        });
+    const server = app.listen(PORT, () => {
+      console.log(`🚀 Server running on port ${PORT}`);
+    });
 
-    } catch (error) {
-        console.error(`❌ Failed to start server: ${error.message}`);
-        process.exit(1);
-    }
+    // Handle crash
+    process.on("unhandledRejection", (err) => {
+      console.error(`❌ Error: ${err.message}`);
+      server.close(() => process.exit(1));
+    });
+
+  } catch (error) {
+    console.error(`❌ Failed to start server: ${error.message}`);
+    process.exit(1);
+  }
 };
 
 startServer();

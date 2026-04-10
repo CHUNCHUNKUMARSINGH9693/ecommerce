@@ -1,6 +1,4 @@
-/**
- * Simple Regex based email validator
- */
+
 export const isValidEmail = (email) => {
     const re = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
     return re.test(email);

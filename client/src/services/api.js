@@ -1,24 +1,15 @@
 import axios from 'axios';
 
-/**
- * UTKARSH HOME API CONFIGURATION
- * This instance handles all communication between the React frontend 
- * and the Node.js backend.
- */
 const API = axios.create({
-  // UPDATED: Points to your local server port (5000) for development
-  // Switch back to 'https://api.utkarshhome.com/v1' only when you deploy
   baseURL: 'http://localhost:5000/api/v1', 
   headers: {
     'Content-Type': 'application/json',
   },
 });
 
-/**
- * REQUEST INTERCEPTOR
- * Automatically attaches the JWT token to the 'Authorization' header
- * so the backend 'protect' middleware can verify the user.
- */
+
+//  * REQUEST INTERCEPTOR
+ 
 API.interceptors.request.use((config) => {
   // Retrieve the user object stored during login
   const userData = localStorage.getItem('utkarsh_user');
@@ -44,10 +35,6 @@ API.interceptors.response.use(
     // 401 means the token is invalid or expired
     if (error.response?.status === 401) {
       console.error('Session expired or Unauthorized. Redirecting to login...');
-      
-      // Optional: Clear local storage and redirect to login page
-      // localStorage.removeItem('utkarsh_user');
-      // window.location.href = '/login';
     }
 
     // Handles cases where the server is down (Network Error)

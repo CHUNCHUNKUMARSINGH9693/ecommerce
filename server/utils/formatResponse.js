@@ -13,5 +13,3 @@ export const formatResponse = (success, message, data = null) => {
     };
 };
 
-// Example usage in controller: 
-// res.status(200).json(formatResponse(true, 'Data fetched', deals));

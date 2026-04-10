@@ -1,8 +1,5 @@
 import User from '../models/User.js';
 
-// @desc    Get user profile
-// @route   GET /api/v1/users/profile
-// @access  Private
 export const getUserProfile = async (req, res) => {
     // The 'protect' middleware adds the user object to 'req'
     const user = await User.findById(req.user._id);

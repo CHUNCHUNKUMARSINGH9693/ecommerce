@@ -1,10 +1,6 @@
 import cron from 'node-cron';
 import Reward from '../models/Reward.js';
 
-/**
- * Scheduled Task: Runs every day at 00:00 (Midnight)
- * Logic: Moves points from 'pending' to 'available' if certain conditions are met.
- */
 const startRewardCron = () => {
     cron.schedule('0 0 * * *', async () => {
         console.log('⏰ Running Daily Reward Processing Job...');

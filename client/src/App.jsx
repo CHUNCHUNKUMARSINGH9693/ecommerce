@@ -9,14 +9,6 @@ import { RewardProvider } from './context/RewardContext';
 // Routes
 import AppRoutes from './routes/AppRoutes';
 
-/**
- * App Component
- * * We wrap the entire application in:
- * 1. Router: For navigation handling.
- * 2. AuthProvider: To manage user session globally.
- * 3. DashboardProvider: For general UI state (sidebar, notifications).
- * 4. RewardProvider: Specifically for referral points and balance.
- */
 function App() {
   return (
     <Router>

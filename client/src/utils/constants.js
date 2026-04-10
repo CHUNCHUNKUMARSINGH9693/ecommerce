@@ -29,4 +29,4 @@ export const COLORS = {
   PRIMARY: '#4f46e5', // Indigo-600
   SUCCESS: '#16a34a', // Green-600
   DANGER: '#dc2626',  // Red-600
-};Ladki mujhe pyar kar.
+};

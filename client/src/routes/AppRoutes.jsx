@@ -1,49 +1,38 @@
-import React from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
+import React from "react";
+import { Routes, Route, Navigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import MainLayout from "../layout/MainLayout";
 
-// Layout wrapper
-import MainLayout from '../layout/MainLayout';
+// Pages
+import Home from "../auth/pages/Home";
+import Login from "../auth/pages/Login";
+import Register from "../auth/pages/Register";
+import Dashboard from "../dashboard/pages/Dashboard";
+import Reports from "../reports/pages/Reports";
 
-// Module Pages (Using your exact folder structure)
-import Dashboard from '../dashboard/pages/Dashboard';
-import Deals from '../deals/pages/Deals';
-import Rewards from '../rewards/pages/Rewards';
-import Referrals from '../referrals/pages/Referrals';
-import Samples from '../samples/pages/Samples';
-import Support from '../support/pages/Support';
-import Reports from '../reports/pages/Reports';
-import Profile from '../profile/pages/Profile';
-
-/**
- * AppRoutes Component
- * Handles the logic for which page to show based on the browser URL.
- */
 const AppRoutes = () => {
+  const { isAuthenticated, loading } = useAuth();
+
+  if (loading) return null; 
+
   return (
     <Routes>
-      {/* All internal pages are wrapped in MainLayout. 
-        This keeps your Navbar and Sidebar visible while the content changes.
-      */}
-      <Route path="/" element={<MainLayout />}>
-        
-        {/* The index route renders the Dashboard when the path is exactly "/" */}
-        <Route index element={<Dashboard />} />
-        
-        {/* Module Routes */}
-        <Route path="deals" element={<Deals />} />
-        <Route path="rewards" element={<Rewards />} />
-        <Route path="referrals" element={<Referrals />} />
-        <Route path="samples" element={<Samples />} />
-        <Route path="support" element={<Support />} />
-        <Route path="reports" element={<Reports />} />
-        <Route path="profile" element={<Profile />} />
+      {/* 🏠 Public: Home is always accessible */}
+      <Route path="/" element={<Home />} />
+      <Route path="/login" element={!isAuthenticated ? <Login /> : <Navigate to="/dashboard" replace />} />
+      <Route path="/register" element={!isAuthenticated ? <Register /> : <Navigate to="/dashboard" replace />} />
 
-        {/* Wildcard Route: If a user enters a path that doesn't exist, 
-          redirect them back to the Dashboard.
-        */}
-        <Route path="*" element={<Navigate to="/" replace />} />
-        
+      {/* 🔒 Private: Changed redirect from "/login" to "/" */}
+      <Route 
+        path="/dashboard" 
+        element={isAuthenticated ? <MainLayout /> : <Navigate to="/" replace />}
+      >
+        <Route index element={<Dashboard />} />
+        <Route path="reports" element={<Reports />} />
       </Route>
+
+      {/* Catch-all: Send everything else to Home */}
+      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
 };

@@ -7,6 +7,7 @@ const Reports = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState('All');
 
+  // Hardcoded data based on your luxury real estate management theme
   const reportData = [
     { id: 'REF-101', date: 'Apr 05, 2026', time: '10:30 AM', title: 'Referral Bonus', category: 'Rewards', status: 'Completed', amount: '200' },
     { id: 'CON-202', date: 'Apr 03, 2026', time: '02:15 PM', title: 'Property Consultancy', category: 'Service', status: 'Pending', amount: '1,500' },
@@ -14,8 +15,11 @@ const Reports = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-[#0a0503] p-6 md:p-10">
-      <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-6">
+    // Removed min-h-screen to prevent double-scrolling inside MainLayout
+    <div className="animate-fade-in space-y-10 text-white">
+      
+      {/* 🚀 HEADER SECTION: Matches the look in your reports video */}
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div className="space-y-2">
           <h1 className="text-4xl font-black text-white tracking-tight uppercase">
             Transaction <span className="text-orange-600">Reports</span>
@@ -24,12 +28,14 @@ const Reports = () => {
             Securely view and manage your financial vault history.
           </p>
         </div>
+        
+        {/* Export Button moved to the side as seen in the UI */}
         <ExportButton data={reportData} />
       </div>
 
+      {/* 📊 TABLE CONTAINER: Matches the rounded "Vault" look */}
       <div className="bg-[#140a05] rounded-[2.5rem] border border-white/5 shadow-2xl overflow-hidden backdrop-blur-md">
         <div className="p-2">
-          {/* Ensure props are passed correctly */}
           <FilterBar 
             setSearchTerm={setSearchTerm} 
             setFilterType={setFilterType} 

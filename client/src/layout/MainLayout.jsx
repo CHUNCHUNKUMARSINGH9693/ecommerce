@@ -1,5 +1,5 @@
 import React from 'react';
-import { Outlet, Navigate } from 'react-router-dom';
+import { Outlet, Navigate, useLocation } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import TopNavbar from './TopNavbar';
 import BottomNav from './BottomNav';
@@ -7,6 +7,7 @@ import { useAuth } from '../context/AuthContext';
 
 const MainLayout = () => {
   const { isAuthenticated, loading } = useAuth();
+  const location = useLocation();
 
   if (loading) {
     return (
@@ -16,32 +17,42 @@ const MainLayout = () => {
     );
   }
 
-  // ✅ CRITICAL REDIRECT: Ensure this points to "/" (Home)
-  // This solves the "white screen" hang by unmounting the layout immediately.
   if (!isAuthenticated) {
     return <Navigate to="/" replace />;
   }
 
   return (
-    <div className="flex min-h-screen bg-[#1a0f0a] text-white overflow-hidden">
-      <div className="hidden lg:block border-r border-white/5">
+    // Set fixed height to screen to allow internal scrolling only
+    <div className="flex h-screen bg-[#0a0503] text-white overflow-hidden font-sans">
+      
+      {/* SIDEBAR - Desktop */}
+      <aside className="hidden lg:block w-72 border-r border-white/5 flex-shrink-0">
         <Sidebar />
-      </div>
+      </aside>
 
-      <div className="flex-1 flex flex-col min-w-0 h-screen">
-        <header className="sticky top-0 z-30">
+      {/* MAIN CONTENT AREA */}
+      <div className="flex-1 flex flex-col min-w-0 relative h-full">
+        
+        {/* TOP NAVIGATION */}
+        <header className="sticky top-0 z-50 flex-shrink-0">
           <TopNavbar />
         </header>
         
-        <main className="flex-1 overflow-y-auto no-scrollbar pb-24 lg:pb-0">
-          <div className="animate-fade-in max-w-[1600px] mx-auto p-4 md:p-8">
-            <Outlet /> 
+        {/* SCROLLABLE PAGE CONTENT */}
+        <main className="flex-1 overflow-y-auto overflow-x-hidden no-scrollbar pb-24 lg:pb-8">
+          <div className="max-w-[1400px] mx-auto p-4 md:p-8">
+            {/* The 'key' ensures that when the URL changes, 
+               React drops the old component and mounts the new one instantly.
+            */}
+            <Outlet key={location.pathname} /> 
           </div>
         </main>
 
-        <footer className="lg:hidden fixed bottom-0 left-0 right-0 z-40">
+        {/* BOTTOM NAVIGATION - Mobile Only */}
+        <footer className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-[#0a0503]/80 backdrop-blur-lg">
           <BottomNav />
         </footer>
+
       </div>
     </div>
   );

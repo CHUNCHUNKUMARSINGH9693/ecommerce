@@ -9,29 +9,47 @@ import Login from "../auth/pages/Login";
 import Register from "../auth/pages/Register";
 import Dashboard from "../dashboard/pages/Dashboard";
 import Reports from "../reports/pages/Reports";
+import WorkSamples from "../samples/pages/WorkSamples"; 
+import Referrals from "../referrals/pages/Referrals";
+import Support from "../support/pages/Support";
+import Profile from "../profile/pages/Profile"; // ✅ Import the Profile page you just created
 
 const AppRoutes = () => {
   const { isAuthenticated, loading } = useAuth();
 
-  if (loading) return null; 
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#0a0503] flex items-center justify-center">
+        <div className="w-10 h-10 border-4 border-orange-600 border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    );
+  }
 
   return (
     <Routes>
-      {/* 🏠 Public: Home is always accessible */}
-      <Route path="/" element={<Home />} />
+      {/* Auth Routes */}
+      <Route path="/" element={!isAuthenticated ? <Home /> : <Navigate to="/dashboard" replace />} />
       <Route path="/login" element={!isAuthenticated ? <Login /> : <Navigate to="/dashboard" replace />} />
       <Route path="/register" element={!isAuthenticated ? <Register /> : <Navigate to="/dashboard" replace />} />
 
-      {/* 🔒 Private: Changed redirect from "/login" to "/" */}
+      {/* ✅ FIXED DASHBOARD SHELL */}
       <Route 
         path="/dashboard" 
         element={isAuthenticated ? <MainLayout /> : <Navigate to="/" replace />}
       >
+        {/* These render inside the <Outlet /> of MainLayout */}
         <Route index element={<Dashboard />} />
         <Route path="reports" element={<Reports />} />
+        <Route path="samples" element={<WorkSamples />} /> 
+        <Route path="referrals" element={<Referrals />} />
+        <Route path="support" element={<Support />} />
+        
+        {/* ✅ ADDED PROFILE ROUTE */}
+        {/* Access this via /dashboard/profile */}
+        <Route path="profile" element={<Profile />} />
       </Route>
 
-      {/* Catch-all: Send everything else to Home */}
+      {/* Catch-all redirect */}
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );

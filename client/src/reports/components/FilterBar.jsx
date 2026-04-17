@@ -2,7 +2,7 @@ import React from 'react';
 
 const FilterBar = ({ setSearchTerm, setFilterType }) => {
   return (
-    <div className="p-4 border-b border-slate-100 bg-slate-50/50 flex flex-col md:flex-row gap-4">
+    <div className="p-4 border-b border-slate-100 bg-slate-50/50 flex flex-col md:flex-row gap-4 text-black">
       <div className="relative flex-1">
         <input 
           type="text"

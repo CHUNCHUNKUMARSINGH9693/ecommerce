@@ -1,25 +1,31 @@
-import React from 'react';
+import React from "react";
+import { LogOut } from "lucide-react";
+import { useAuth } from "../../context/AuthContext"; // ✅ Fixed path
+import { useNavigate } from "react-router-dom";
 
 const LogoutButton = () => {
+  const { logout } = useAuth();
+  const navigate = useNavigate();
+
   const handleLogout = () => {
-    const confirm = window.confirm("Are you sure you want to logout?");
-    if (confirm) {
-      // Logic for clearing JWT/Auth state goes here
-      console.log("Logged out successfully");
-      window.location.href = "/login";
-    }
+    logout();
+    navigate("/", { replace: true });
   };
 
   return (
-    <button 
-      onClick={handleLogout}
-      className="flex items-center gap-2 px-4 py-2 text-sm font-bold text-red-600 hover:bg-red-50 rounded-lg transition-colors border border-transparent hover:border-red-100"
-    >
-      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-      </svg>
-      Logout
-    </button>
+    <div className="mt-8 pt-6 border-t border-white/5">
+      <button
+        onClick={handleLogout}
+        className="w-full flex items-center justify-center gap-3 py-4 bg-rose-600/10 hover:bg-rose-600 text-rose-500 hover:text-white rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] transition-all border border-rose-600/20 shadow-lg shadow-rose-900/10 group"
+      >
+        <LogOut size={18} className="group-hover:-translate-x-1 transition-transform" />
+        Close Session
+      </button>
+      
+      <p className="mt-4 text-center text-[9px] text-gray-600 uppercase font-black tracking-[0.3em]">
+        Utkarsh Home Security Protocol Active
+      </p>
+    </div>
   );
 };
 

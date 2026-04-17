@@ -5,20 +5,26 @@ import LogoutButton from '../components/LogoutButton';
 
 const Profile = () => {
   return (
-    <div className="min-h-screen bg-slate-50 py-10 px-4">
-      <div className="max-w-3xl mx-auto space-y-6">
-        <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-slate-800">Account Profile</h1>
-          <LogoutButton />
+    <div className="min-h-screen bg-[#0a0503] p-4 md:p-8">
+      <div className="max-w-md mx-auto space-y-6">
+        
+        {/* 1. Header Section */}
+        <div className="text-center mb-10">
+          <h1 className="text-3xl font-serif italic text-white">Resident Profile</h1>
+          <p className="text-orange-500 text-[10px] font-black uppercase tracking-[0.3em]">
+            Utkarsh Home Vault
+          </p>
         </div>
 
-        <div className="grid grid-cols-1 gap-6">
-          {/* Main Identity Section */}
-          <UserInfo />
+        {/* 2. User Information Section */}
+        <UserInfo />
 
-          {/* Configuration Section */}
-          <Settings />
-        </div>
+        {/* 3. Settings Section */}
+        <Settings />
+
+        {/* 4. Logout Section (Now at the Bottom) */}
+        <LogoutButton />
+        
       </div>
     </div>
   );

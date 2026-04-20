@@ -9,6 +9,7 @@ const Sidebar = () => {
     { name: 'Refer & Earn', icon: <Users size={20} />, path: '/dashboard/referrals' },
     { name: 'Reports', icon: <FileText size={20} />, path: '/dashboard/reports' },
     { name: 'Support', icon: <LifeBuoy size={20} />, path: '/dashboard/support' },
+    { name: 'Cart', icon: <Briefcase size={20} />, path: '/dashboard/cart' },
   ];
 
   return (

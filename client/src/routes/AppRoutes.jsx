@@ -13,6 +13,7 @@ import WorkSamples from "../samples/pages/WorkSamples";
 import Referrals from "../referrals/pages/Referrals";
 import Support from "../support/pages/Support";
 import Profile from "../profile/pages/Profile"; // ✅ Import the Profile page you just created
+import Cart from "../Cart/Cart";
 
 const AppRoutes = () => {
   const { isAuthenticated, loading } = useAuth();
@@ -43,6 +44,7 @@ const AppRoutes = () => {
         <Route path="samples" element={<WorkSamples />} /> 
         <Route path="referrals" element={<Referrals />} />
         <Route path="support" element={<Support />} />
+        <Route path="cart" element={<Cart />} />
         
         {/* ✅ ADDED PROFILE ROUTE */}
         {/* Access this via /dashboard/profile */}

@@ -5,7 +5,7 @@ const userSchema = new mongoose.Schema(
   {
     name: { type: String, required: true },
 
-    email: { type: String, required: true, unique: true },
+    email: { type: String, required: true, unique: true, lowercase: true, trim: true },
 
     password: { type: String, required: true },
 
@@ -15,9 +15,12 @@ const userSchema = new mongoose.Schema(
       default: "user",
     },
 
-    myReferralCode: {
+    referralCode: {
       type: String,
       unique: true,
+      required: true,
+      uppercase: true,
+      trim: true,
     },
 
     appliedReferral: {
@@ -32,6 +35,18 @@ const userSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
+userSchema.pre("validate", function (next) {
+  if (this.email) {
+    this.email = this.email.toLowerCase();
+  }
+
+  if (!this.referralCode) {
+    this.referralCode = `REF${Math.random().toString(36).slice(2, 10).toUpperCase()}`;
+  }
+
+  next();
+});
 
 // 🔐 HASH PASSWORD
 userSchema.pre("save", async function () {

@@ -1,15 +1,37 @@
 import Deal from '../models/Deal.js';
-import Reward from '../models/Reward.js';
+import Product from '../models/Product.js'; 
+import User from '../models/User.js';
 
-export const getDashboardStats = async (req, res) => {
-    // Fetching data specifically for the logged-in user
-    const totalDeals = await Deal.countDocuments({ user: req.user._id });
-    const rewards = await Reward.findOne({ user: req.user._id });
+export const getDashboardStats = async (req, res, next) => {
+  try {
+    const userId = req.user?._id;
+    if (!userId) {
+      res.status(401);
+      throw new Error("User not authenticated");
+    }
 
-    res.json({
-        totalDeals,
-        earnedPoints: rewards?.points || 0,
-        pendingEarnings: rewards?.pending || 0,
-        successRate: "85%", // Logic can be calculated based on deals
+    const [ordersCount, productsCount, customersCount, salesAgg] = await Promise.all([
+      Deal.countDocuments({ user: userId }),
+      Product.countDocuments(),
+      User.countDocuments(),
+      Deal.aggregate([
+        { $match: { user: userId } },
+        { $group: { _id: null, totalSales: { $sum: { $ifNull: ["$dealValue", 0] } } } },
+      ]),
+    ]);
+
+    const totalSales = salesAgg?.[0]?.totalSales || 0;
+
+    res.status(200).json({
+      success: true,
+      data: {
+        totalSales,
+        orderCount: ordersCount,
+        productCount: productsCount,
+        customerCount: customersCount,
+      },
     });
+  } catch (error) {
+    next(error);
+  }
 };

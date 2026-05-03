@@ -1,11 +1,18 @@
 import mongoose from 'mongoose';
 
-const transactionSchema = new mongoose.Schema({
-  user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-  amount: { type: Number, required: true },
-  type: { type: String, enum: ['Credit', 'Debit'], required: true },
-  description: { type: String, required: true }, // e.g., "Referral bonus for Jay"
-  status: { type: String, enum: ['Successful', 'Pending', 'Failed'], default: 'Successful' }
-}, { timestamps: true });
+const transactionSchema = new mongoose.Schema(
+  {
+    user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    amount: { type: Number, required: true, min: 0 },
+    status: {
+      type: String,
+      enum: ['pending', 'completed', 'Pending', 'Successful', 'Failed'],
+      default: 'pending',
+    },
+    type: { type: String, required: true, trim: true },
+    description: { type: String, trim: true },
+  },
+  { timestamps: true }
+);
 
 export default mongoose.model('Transaction', transactionSchema);

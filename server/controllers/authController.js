@@ -1,124 +1,137 @@
 import User from "../models/User.js";
+import Referral from "../models/Referral.js";
+import Reward from "../models/Reward.js";
+import Transaction from "../models/Transaction.js";
 import generateToken from "../utils/generateToken.js";
 
-// 🔐 REGISTER USER
-export const registerUser = async (req, res) => {
+// 🔐 REGISTER
+export const registerUser = async (req, res, next) => {
   try {
     const { name, email, password, referralCode } = req.body;
 
-    // ✅ 1. Validation
     if (!name || !email || !password) {
-      return res.status(400).json({
-        success: false,
-        message: "Please provide all required fields",
-      });
+      res.status(400);
+      throw new Error("Name, email, and password are required");
     }
 
-    // ✅ 2. Normalize email
     const normalizedEmail = email.toLowerCase();
-
-    // ✅ 3. Check existing user
     const userExists = await User.findOne({ email: normalizedEmail });
     if (userExists) {
-      return res.status(400).json({
-        success: false,
-        message: "User already exists",
-      });
+      res.status(400);
+      throw new Error("User already exists");
     }
 
-    // ✅ 4. Generate referral code
-    const myReferralCode =
-      "UTK" + Math.random().toString(36).substring(2, 8).toUpperCase();
-
-    // ✅ 5. Create user
     const user = await User.create({
       name,
       email: normalizedEmail,
       password,
       appliedReferral: referralCode || null,
-      myReferralCode,
     });
 
-    // ✅ 6. Response
-    return res.status(201).json({
+    // Track referral and reward distribution if a valid referral code is used.
+    if (referralCode) {
+      const referrer = await User.findOne({ referralCode: referralCode.toUpperCase() });
+
+      if (referrer && referrer._id.toString() !== user._id.toString()) {
+        await Referral.create({
+          referrer: referrer._id,
+          referredUser: user._id,
+          status: "Completed",
+          rewardDistributed: true,
+        });
+
+        const referrerReward = await Reward.findOne({ user: referrer._id });
+        if (!referrerReward) {
+          await Reward.create({
+            user: referrer._id,
+            points: 50,
+            totalEarned: 50,
+            pending: 0,
+          });
+        } else {
+          referrerReward.points += 50;
+          referrerReward.totalEarned += 50;
+          referrerReward.lastUpdated = new Date();
+          await referrerReward.save();
+        }
+
+        await Transaction.create({
+          user: referrer._id,
+          amount: 50,
+          type: "Credit",
+          status: "completed",
+          description: `Referral reward for inviting ${user.name}`,
+        });
+      }
+    }
+
+    res.status(201).json({
       success: true,
-      message: "User registered successfully",
       user: {
         _id: user._id,
         name: user.name,
         email: user.email,
-        referralCode: user.myReferralCode,
+        referralCode: user.referralCode,
       },
       token: generateToken(user._id),
     });
-
   } catch (error) {
-    console.error("REGISTER ERROR:", error);
-
-    return res.status(500).json({
-      success: false,
-      message: "Server Error",
-    });
+    next(error);
   }
 };
 
-
-// 🔑 LOGIN USER
-export const loginUser = async (req, res) => {
+// 🔑 LOGIN
+export const loginUser = async (req, res, next) => {
   try {
     const { email, password } = req.body;
 
-    // ✅ 1. Validation
     if (!email || !password) {
-      return res.status(400).json({
-        success: false,
-        message: "Please enter email and password",
-      });
+      res.status(400);
+      throw new Error("Email and password are required");
     }
 
-    // ✅ 2. Normalize email
-    const normalizedEmail = email.toLowerCase();
-
-    // ✅ 3. Find user
-    const user = await User.findOne({ email: normalizedEmail });
-
-    if (!user) {
-      return res.status(401).json({
-        success: false,
-        message: "Invalid email or password",
-      });
+    const user = await User.findOne({ email: email.toLowerCase() });
+    if (!user || !(await user.matchPassword(password))) {
+      res.status(401);
+      throw new Error("Invalid credentials");
     }
 
-    // ✅ 4. Check password
-    const isMatch = await user.matchPassword(password);
-
-    if (!isMatch) {
-      return res.status(401).json({
-        success: false,
-        message: "Invalid email or password",
-      });
-    }
-
-    // ✅ 5. Success
-    return res.status(200).json({
+    res.status(200).json({
       success: true,
-      message: "Login successful",
       user: {
         _id: user._id,
         name: user.name,
         email: user.email,
-        role: user.role || "user",
-        referralCode: user.myReferralCode,
+        referralCode: user.referralCode,
       },
       token: generateToken(user._id),
     });
-
   } catch (error) {
-    console.error("LOGIN ERROR:", error);
-
-    return res.status(500).json({
-      success: false,
-      message: "Server Error",
-    });
+    next(error);
   }
+};
+
+// 👤 GET PROFILE
+export const getUserProfile = async (req, res, next) => {
+  try {
+    const user = await User.findById(req.user._id).select("-password");
+
+    if (!user) {
+      res.status(404);
+      throw new Error("User not found");
+    }
+
+    res.status(200).json({ success: true, data: user });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// 🚪 LOGOUT
+export const logoutUser = async (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: "Logged out successfully",
+    token: null,
+  });
 };

@@ -51,7 +51,7 @@ const Register = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#0a0503] flex items-center justify-center p-6">
+    <div className="min-h-screen bg-white flex items-center justify-center p-6">
       <div className="w-full max-w-md bg-[#140a05] border border-white/5 rounded-[3rem] p-10 shadow-2xl">
         
         <h1 className="text-3xl font-black text-white text-center mb-8 italic uppercase">

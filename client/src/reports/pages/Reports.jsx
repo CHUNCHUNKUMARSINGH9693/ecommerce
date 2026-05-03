@@ -14,6 +14,14 @@ const Reports = () => {
     { id: 'PAY-303', date: 'Mar 28, 2026', time: '09:00 AM', title: 'Listing Fee', category: 'Ad Fee', status: 'Completed', amount: '500' },
   ];
 
+  const filteredReports = reportData.filter((item) => {
+    const q = searchTerm.toLowerCase();
+    const matchesSearch =
+      item.id.toLowerCase().includes(q) || item.title.toLowerCase().includes(q);
+    const matchesType = filterType === 'All' || item.category.toLowerCase().includes(filterType.toLowerCase());
+    return matchesSearch && matchesType;
+  });
+
   return (
     // Removed min-h-screen to prevent double-scrolling inside MainLayout
     <div className="animate-fade-in space-y-10 text-white">
@@ -43,11 +51,7 @@ const Reports = () => {
         </div>
 
         <div className="px-2 pb-2">
-          <ReportTable 
-            data={reportData} 
-            searchTerm={searchTerm} 
-            filterType={filterType} 
-          />
+          <ReportTable reports={filteredReports} />
         </div>
       </div>
     </div>

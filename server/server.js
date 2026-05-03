@@ -17,6 +17,9 @@ import rewardRoutes from "./routes/rewardRoutes.js";
 import referralRoutes from "./routes/referralRoutes.js";
 import reportRoutes from "./routes/reportRoutes.js";
 import supportRoutes from "./routes/supportRoutes.js";
+import productRoutes from "./routes/productRoutes.js";
+import inventoryRoutes from "./routes/inventoryRoutes.js";
+import paymentRoutes from "./routes/paymentRoutes.js"; // 1. Added Payment Routes
 
 // Middlewares
 import { notFound, errorHandler } from "./middleware/errorMiddleware.js";
@@ -44,7 +47,7 @@ app.use(
   })
 );
 
-// CORS (IMPORTANT)
+// CORS
 app.use(
   cors({
     origin: process.env.CLIENT_URL || "http://localhost:5173",
@@ -53,8 +56,19 @@ app.use(
   })
 );
 
+// 2. STRIPE WEBHOOK (Must be BEFORE express.json)
+// This route receives a raw buffer for signature verification
+app.post(
+  "/api/v1/payments/webhook",
+  express.raw({ type: "application/json" }),
+  (req, res) => {
+    // Webhook logic usually lives in its own controller, but the raw body config happens here.
+    // For now, pass to your payment controller or handle here.
+  }
+);
+
 // Logging
-if (process.env.NODE_ENV === "development") {
+if (env.NODE_ENV === "development") {
   app.use(morgan("dev"));
 }
 
@@ -79,12 +93,15 @@ app.use("/api/v1/rewards", rewardRoutes);
 app.use("/api/v1/referrals", referralRoutes);
 app.use("/api/v1/reports", reportRoutes);
 app.use("/api/v1/support", supportRoutes);
+app.use("/api/v1/products", productRoutes);
+app.use("/api/v1/inventory", inventoryRoutes);
+app.use("/api/v1/payments", paymentRoutes); // 3. Registered Payment Routes
 
 // Health check
 app.get("/health", (req, res) => {
   res.status(200).json({
     success: true,
-    message: "Utkarsh Home Server is running 🚀",
+    message: "E-Commerce Admin API is running",
   });
 });
 
@@ -104,11 +121,9 @@ app.use(errorHandler);
 
 const startServer = async () => {
   try {
-    // DB connect
     await connectDB();
     console.log("📦 MongoDB Connected");
 
-    // Start background jobs
     startRewardCron();
     startCleanupJob();
 
@@ -118,12 +133,10 @@ const startServer = async () => {
       console.log(`🚀 Server running on port ${PORT}`);
     });
 
-    // Handle crash
     process.on("unhandledRejection", (err) => {
       console.error(`❌ Error: ${err.message}`);
       server.close(() => process.exit(1));
     });
-
   } catch (error) {
     console.error(`❌ Failed to start server: ${error.message}`);
     process.exit(1);

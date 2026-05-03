@@ -1,61 +1,81 @@
 import User from '../models/User.js';
 
-export const getUserProfile = async (req, res) => {
-    // The 'protect' middleware adds the user object to 'req'
-    const user = await User.findById(req.user._id);
+export const getUserProfile = async (req, res, next) => {
+  try {
+    const user = await User.findById(req.user._id).select('-password');
 
-    if (user) {
-        res.json({
-            _id: user._id,
-            name: user.name,
-            email: user.email,
-            role: user.role,
-            referralCode: user.myReferralCode,
-            joinedAt: user.createdAt,
-        });
-    } else {
-        res.status(404).json({ message: 'User not found' });
+    if (!user) {
+      res.status(404);
+      throw new Error('User not found');
     }
+
+    res.json({
+      success: true,
+      data: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        referralCode: user.referralCode,
+        joinedAt: user.createdAt,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
 };
 
 // @desc    Update user profile
 // @route   PUT /api/v1/users/profile
 // @access  Private
-export const updateUserProfile = async (req, res) => {
+export const updateUserProfile = async (req, res, next) => {
+  try {
     const user = await User.findById(req.user._id);
 
-    if (user) {
-        // Update fields if they are sent in the body, otherwise keep current
-        user.name = req.body.name || user.name;
-        user.email = req.body.email || user.email;
-
-        // If password is being updated, it will be hashed by the User Model's pre-save hook
-        if (req.body.password) {
-            user.password = req.body.password;
-        }
-
-        const updatedUser = await user.save();
-
-        res.json({
-            _id: updatedUser._id,
-            name: updatedUser.name,
-            email: updatedUser.email,
-            token: req.headers.authorization.split(' ')[1], // Return the existing token
-        });
-    } else {
-        res.status(404).json({ message: 'User not found' });
+    if (!user) {
+      res.status(404);
+      throw new Error('User not found');
     }
+
+    user.name = req.body.name || user.name;
+    user.email = req.body.email ? req.body.email.toLowerCase() : user.email;
+
+    if (req.body.password) {
+      user.password = req.body.password;
+    }
+
+    const updatedUser = await user.save();
+
+    res.json({
+      success: true,
+      data: {
+        _id: updatedUser._id,
+        name: updatedUser.name,
+        email: updatedUser.email,
+        referralCode: updatedUser.referralCode,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
 };
 
 // @desc    Get user's network / statistics (Optional for User Tab)
 // @route   GET /api/v1/users/stats
 // @access  Private
-export const getUserNetworkStats = async (req, res) => {
+export const getUserNetworkStats = async (req, res, next) => {
+  try {
     const user = await User.findById(req.user._id).populate('referrals');
-    
+
     res.json({
-        totalReferrals: user.referrals?.length || 0,
+      success: true,
+      data: {
+        totalReferrals: user?.referrals?.length || 0,
         accountStatus: 'Active',
-        kycVerified: user.isVerified || false
+        kycVerified: user?.isVerified || false,
+      },
     });
+  } catch (error) {
+    next(error);
+  }
 };

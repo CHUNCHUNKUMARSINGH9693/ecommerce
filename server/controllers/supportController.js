@@ -1,19 +1,3 @@
-// import SupportTicket from '../models/SupportTicket.js';
-
-// export const createTicket = async (req, res) => {
-//     const { subject, message, priority } = req.body;
-
-//     const ticket = await SupportTicket.create({
-//         user: req.user._id,
-//         subject,
-//         message,
-//         priority,
-//         status: 'Open'
-//     });
-
-//     res.status(201).json(ticket);
-// };
-
 import SupportTicket from '../models/SupportTicket.js';
 
 // @desc    Create a new support ticket
@@ -23,15 +7,16 @@ export const createTicket = async (req, res) => {
     const { issueType, priority, subject, description } = req.body;
 
     // Validation
-    if (!subject || !description) {
+    if (!subject || !priority) {
       return res.status(400).json({ message: "Please fill all required fields" });
     }
 
     const newTicket = new SupportTicket({
-      issueType,
+      user: req.user?._id,
+      issueType: issueType || 'General Inquiry',
       priority,
       subject,
-      description
+      description: description || '',
     });
 
     const savedTicket = await newTicket.save();
@@ -44,9 +29,23 @@ export const createTicket = async (req, res) => {
 // @desc    Get all tickets (for history)
 export const getTickets = async (req, res) => {
   try {
-    const tickets = await SupportTicket.find().sort({ createdAt: -1 });
-    res.status(200).json(tickets);
+    const query = req.user?._id ? { user: req.user._id } : {};
+    const tickets = await SupportTicket.find(query).sort({ createdAt: -1 });
+    res.status(200).json({ success: true, data: tickets });
   } catch (error) {
     res.status(500).json({ message: error.message });
+  }
+};
+
+// @desc    Get ticket details by ID
+export const getTicketById = async (req, res) => {
+  try {
+    const ticket = await SupportTicket.findById(req.params.id);
+    if (!ticket) {
+      return res.status(404).json({ success: false, message: 'Ticket not found' });
+    }
+    res.status(200).json({ success: true, data: ticket });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
   }
 };

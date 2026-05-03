@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   TrendingUp, Gem, ShieldCheck, Zap, 
-  ArrowUpRight, User, Search, Bell 
+  ArrowUpRight, User
 } from 'lucide-react';
 
 // Component Imports
@@ -26,7 +26,7 @@ const Dashboard = () => {
   }, [navigate]);
 
   return (
-    <div className="bg-[#0f0a07] min-h-screen text-white p-4 md:p-8 lg:p-12 space-y-12 animate-in fade-in slide-in-from-bottom-6 duration-1000 pb-24 md:pb-12 selection:bg-orange-500/30">
+    <div className="bg-[#120E0B] min-h-screen text-white p-4 md:p-8 lg:p-12 space-y-12 animate-in fade-in slide-in-from-bottom-6 duration-1000 pb-24 md:pb-12 selection:bg-orange-500/30">
           <OverviewCards />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
@@ -68,7 +68,7 @@ const Dashboard = () => {
           <RecentOrders />
           
           {/* VAULT ACTIONS */}
-          <section className="bg-[#1a1310] border border-white/5 rounded-[3rem] p-8 md:p-10 shadow-2xl relative overflow-hidden group">
+          <section className="bg-[#1A1613] border border-white/5 rounded-[3rem] p-8 md:p-10 shadow-2xl relative overflow-hidden group">
             <div className="flex items-center justify-between mb-10">
               <div className="flex items-center gap-4">
                 <div className="p-3 bg-orange-600/10 rounded-2xl text-orange-500">
@@ -122,7 +122,7 @@ const Dashboard = () => {
           {/* CONCIERGE ACCESS */}
           <button 
             onClick={() => navigate('/dashboard/support')}
-            className="w-full p-8 bg-[#1a1310] border border-white/5 rounded-[2.5rem] flex items-center justify-between group hover:border-orange-500/40 transition-all active:scale-95 shadow-xl"
+            className="w-full p-8 bg-[#1A1613] border border-white/5 rounded-[2.5rem] flex items-center justify-between group hover:border-orange-500/40 transition-all active:scale-95 shadow-xl"
           >
             <div className="flex items-center gap-6 text-left">
               <div className="w-16 h-16 rounded-[1.5rem] bg-orange-600/10 flex items-center justify-center text-orange-500 group-hover:bg-orange-600 group-hover:text-white transition-all duration-500">

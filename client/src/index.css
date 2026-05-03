@@ -6,11 +6,11 @@
 @tailwind utilities;
 
 :root {
-  /* Luxury Color Palette from your Reference Image */
-  --bg-chocolate: #1a0f0a;     /* Main deep background */
-  --sidebar-dark: #140a05;     /* Even darker sidebar */
-  --accent-orange: #e65100;    /* The "Search" button orange */
-  --luxury-gold: #d4b08c;      /* Subtle gold for text/borders */
+  /* Luxury Dark palette */
+  --bg-primary: #120e0b;
+  --card-secondary: #1a1613;
+  --accent-orange: #ff6b00;
+  --luxury-gold: #d4b08c;
 }
 
 @layer base {
@@ -20,8 +20,7 @@
   }
 
   body {
-    /* Apply the Deep Chocolate background globally */
-    @apply bg-[#1a0f0a] text-white antialiased;
+    @apply bg-[#120E0B] text-white antialiased;
     font-family: 'Plus Jakarta Sans', sans-serif;
   }
 
@@ -44,8 +43,8 @@
 
   /* The "Search" button style from your reference image */
   .btn-premium {
-    @apply bg-[#e65100] text-white font-bold py-3 px-8 rounded-xl 
-           transition-all duration-300 hover:bg-[#ff5d00] hover:shadow-[0_0_20px_rgba(230,81,0,0.4)];
+    @apply bg-[#ff6b00] text-white font-bold py-3 px-8 rounded-xl 
+           transition-all duration-300 hover:bg-[#ff7d26] hover:shadow-[0_0_20px_rgba(255,107,0,0.4)];
   }
 }
 
@@ -55,7 +54,7 @@
 
   /* Gradient for the "Premium Consultant" card */
   .bg-luxury-gradient {
-    background: linear-gradient(135deg, #e65100 0%, #802b00 100%);
+    background: linear-gradient(135deg, #ff6b00 0%, #7a2e00 100%);
   }
 }
 
@@ -65,7 +64,7 @@
 }
 
 ::-webkit-scrollbar-track {
-  background: #140a05;
+  background: #120e0b;
 }
 
 ::-webkit-scrollbar-thumb {
@@ -74,7 +73,7 @@
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #e65100;
+  background: #ff6b00;
 }
 
 /* 3. Animation for page transitions */

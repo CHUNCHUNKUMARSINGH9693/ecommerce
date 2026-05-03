@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { Home, Briefcase, Users, LifeBuoy, User, FileText, icons } from 'lucide-react';
+import { Home, Briefcase, Users, LifeBuoy, FileText, ShoppingCart } from 'lucide-react';
 
 const BottomNav = () => {
   const navItems = [
@@ -10,6 +10,7 @@ const BottomNav = () => {
     { name: 'Refer', path: '/dashboard/referrals', icon: <Users size={20} /> },
     { name: 'Reports', path: '/dashboard/reports', icon: <FileText size={20}/>},
     { name: 'Support', path: '/dashboard/support', icon: <LifeBuoy size={20} /> },
+    { name: 'Cart', path: '/dashboard/cart', icon: <ShoppingCart size={20} /> },
   ];
 
   return (

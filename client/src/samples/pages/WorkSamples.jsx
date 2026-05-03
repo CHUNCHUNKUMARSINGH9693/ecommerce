@@ -1,54 +1,107 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import SampleCard from '../components/SampleCard';
+import API from '../../services/api';
 
 const WorkSamples = () => {
-  const sampleData = [
-    // --- ELECTRONICS ---
-    { id: 1, title: "Premium Wireless Headphones", category: "Electronics", price: 299.99, image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e", tag: "Best Seller", rating: 4.8 },
-    { id: 2, title: "Ultra-Slim Gaming Laptop", category: "Electronics", price: 1299.00, image: "https://images.unsplash.com/photo-1588872657578-7efd1f1555ed", tag: "Hot", rating: 4.9 },
-    { id: 3, title: "Noise Cancelling Earbuds", category: "Electronics", price: 129.99, image: "https://images.unsplash.com/photo-1590658268037-6bf12165a8df", tag: "Trending", rating: 4.7 },
-    { id: 4, title: "Mechanical RGB Keyboard", category: "Electronics", price: 159.00, image: "https://images.unsplash.com/photo-1511467687858-23d96c32e4ae", tag: "New", rating: 4.6 },
-    { id: 5, title: "4K Mirrorless Camera", category: "Electronics", price: 899.00, image: "https://images.unsplash.com/photo-1516035069371-29a1b244cc32", tag: "Professional", rating: 4.9 },
-    { id: 6, title: "Smart Home Assistant", category: "Electronics", price: 79.99, image: "https://images.unsplash.com/photo-1589492477829-5e65395b66cc", tag: "Sale", rating: 4.4 },
+  const [products, setProducts] = useState([]);
+  const [selectedItem, setSelectedItem] = useState(null);
+  const [visibleCount, setVisibleCount] = useState(8); // Start with 8 items
 
-    // --- ACCESSORIES ---
-    { id: 7, title: "Classic Leather Watch", category: "Accessories", price: 150.00, image: "https://images.unsplash.com/photo-1524592094714-0f0654e20314", tag: "Limited", rating: 4.5 },
-    { id: 8, title: "Heritage Canvas Backpack", category: "Accessories", price: 65.00, image: "https://images.unsplash.com/photo-1548036328-c9fa89d128fa", tag: "Durable", rating: 4.6 },
-    { id: 9, title: "Modern Polarized Sunglasses", category: "Accessories", price: 85.00, image: "https://images.unsplash.com/photo-1572635196237-14b3f281503f", tag: "Flash Sale", rating: 4.4 },
-    { id: 10, title: "Minimalist Leather Wallet", category: "Accessories", price: 45.00, image: "https://images.unsplash.com/photo-1627123424574-724758594e93", tag: "New Arrival", rating: 4.8 },
-    { id: 11, title: "Gold Plated Cufflinks", category: "Accessories", price: 120.00, image: "https://images.unsplash.com/photo-1617114919297-3c8ddb01f599", tag: "Luxury", rating: 4.7 },
-    { id: 12, title: "Stainless Steel Bottle", category: "Accessories", price: 30.00, image: "https://images.unsplash.com/photo-1602143399827-bd959517b58e?auto=format&fit=crop&w=800&q=80", tag: "Eco", rating: 4.5 },    { id: 13, title: "Minimalist Cotton Tee", category: "Fashion", price: 35.00, image: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab", tag: "Essential", rating: 4.2 },
-    { id: 14, title: "Luxury Silk Evening Dress", category: "Fashion", price: 210.00, image: "https://images.unsplash.com/photo-1515377905703-c4788e51af15", tag: "Premium", rating: 4.3 },
-    { id: 15, title: "Urban Denim Jacket", category: "Fashion", price: 95.00, image: "https://images.unsplash.com/photo-1551537482-f2075a1d41f2", tag: "Best Seller", rating: 4.6 },
-    { id: 16, title: "Cashmere Winter Scarf", category: "Fashion", price: 55.00, image: "https://images.unsplash.com/photo-1520903920243-00d872a2d1c9", tag: "Cozy", rating: 4.9 },
-    { id: 17, title: "Tailored Slim Fit Suit", category: "Fashion", price: 450.00, image: "https://images.unsplash.com/photo-1594932224827-ec4b59ca583a", tag: "Classic", rating: 4.8 },
-    { id: 18, title: "Breathable Mesh Sneakers", category: "Fashion", price: 80.00, image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff", tag: "Athletic", rating: 4.7 },
+  // handleAddToCart Logic remains the same as your previous version...
+  const handleAddToCart = (product) => {
+    const cart = JSON.parse(localStorage.getItem('cart')) || [];
+    const existingItem = cart.find(item => item._id === product._id);
+    if (existingItem) { alert("Already in cart!"); return; }
+    const updatedCart = [...cart, { ...product, quantity: 1 }];
+    localStorage.setItem('cart', JSON.stringify(updatedCart));
+    window.dispatchEvent(new Event('cartUpdated'));
+    alert(`${product.name} added to cart!`);
+  };
 
-    // --- HOME & LIFESTYLE ---
-    { id: 19, title: "Ergonomic Office Chair", category: "Lifestyle", price: 350.00, image: "https://images.unsplash.com/photo-1505843490538-5133c6c7d0e1", tag: "Comfort", rating: 4.8 },
-    { id: 20, title: "Scented Soy Candle Set", category: "Lifestyle", price: 25.00, image: "https://images.unsplash.com/photo-1603006905003-be475563bc59", tag: "Gift", rating: 4.5 },
-    { id: 21, title: "Electric Pour-Over Kettle", category: "Lifestyle", price: 110.00, image: "https://images.unsplash.com/photo-1574170623305-6f86641550d3", tag: "Modern", rating: 4.9 },
-    { id: 22, title: "Ceramic Minimalist Vase", category: "Lifestyle", price: 40.00, image: "https://images.unsplash.com/photo-1581783898377-1c85bf937427", tag: "Decor", rating: 4.6 },
-    { id: 23, title: "Adjustable Standing Desk", category: "Lifestyle", price: 499.00, image: "https://images.unsplash.com/photo-1595515106969-1ce29566ff1c", tag: "Productive", rating: 4.8 },
-    { id: 24, title: "Bluetooth Turntable", category: "Lifestyle", price: 180.00, image: "https://images.unsplash.com/photo-1603048588665-791ca8aea617", tag: "Vintage", rating: 4.7 },
-  ];
+  useEffect(() => {
+    const fetchInventory = async () => {
+      try {
+        const response = await API.get('/products/inventory');
+        if (response.data?.success) setProducts(response.data.data);
+      } catch (err) { console.error(err); }
+    };
+    fetchInventory();
+  }, []);
+
+  const handleLoadMore = () => {
+    setVisibleCount((prevCount) => prevCount + 8); // Load 8 more on click
+  };
 
   return (
-    <div className="animate-fade-in space-y-10 text-white p-6 md:p-10">
-      <div className="space-y-2">
-        <h1 className="text-4xl font-black uppercase tracking-tight">
-          Product <span className="text-orange-600">Inventory</span>
-        </h1>
-        <p className="text-gray-500 font-medium tracking-wide">
-          A collection of high-end consumer goods from our digital marketplace.
-        </p>
-      </div>
+    <div className="p-4 sm:p-6 md:p-10 text-white max-w-7xl mx-auto">
+      <h1 className="text-3xl md:text-4xl font-black uppercase mb-10 text-center md:text-left">
+        Product <span className="text-orange-600">Inventory</span>
+      </h1>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-        {sampleData.map((item) => (
-          <SampleCard key={item.id} item={item} />
+      {/* Fully Responsive Grid */}
+      <div className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-8">
+        {products.slice(0, visibleCount).map((item) => (
+          <SampleCard 
+            key={item._id} 
+            item={item} 
+            onViewDetails={setSelectedItem}
+            onAddToCart={handleAddToCart}
+          />
         ))}
       </div>
+
+      {/* Load More Button */}
+      {visibleCount < products.length && (
+        <div className="flex justify-center mt-12 mb-8">
+          <button 
+            onClick={handleLoadMore}
+            className="px-10 py-4 bg-orange-600 hover:bg-orange-700 text-white font-black uppercase rounded-xl transition-all active:scale-95 shadow-lg shadow-orange-600/20"
+          >
+            Load More Products
+          </button>
+        </div>
+      )}
+
+      {/* --- ENHANCED MODAL --- */}
+      {selectedItem && (
+        <div className="fixed inset-0 z-50 bg-black/90 backdrop-blur-sm flex items-center justify-center p-4">
+           <div className="w-full max-w-2xl bg-[#140a05] border border-white/10 rounded-3xl overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-300">
+              <div className="flex flex-col md:flex-row">
+                <div className="md:w-1/2 h-64 md:h-auto">
+                  <img src={selectedItem.image} className="w-full h-full object-cover" alt={selectedItem.name} />
+                </div>
+                <div className="md:w-1/2 p-6 md:p-8 flex flex-col justify-center">
+                  <span className="text-orange-500 font-bold text-xs uppercase tracking-widest mb-2 block">{selectedItem.category}</span>
+                  <h2 className="text-2xl md:text-3xl font-black mb-2 leading-tight">{selectedItem.name}</h2>
+                  <p className="text-orange-500 text-2xl font-black mb-4">${selectedItem.price}</p>
+                  
+                  {/* More Details section */}
+                  <div className="mb-6">
+                    <h4 className="text-white/40 uppercase text-[10px] font-bold tracking-widest mb-2">Description</h4>
+                    <p className="text-white/70 text-sm leading-relaxed">
+                      {selectedItem.description || "High-quality premium product designed for durability and performance. Perfect for modern lifestyles."}
+                    </p>
+                  </div>
+                  
+                  <div className="flex flex-col gap-3">
+                    <button 
+                      onClick={() => {
+                        handleAddToCart(selectedItem);
+                        setSelectedItem(null);
+                      }}
+                      className="w-full py-4 bg-orange-600 text-white font-black rounded-xl uppercase hover:bg-white hover:text-black transition-all"
+                    >
+                      Add to Cart
+                    </button>
+                    <button onClick={() => setSelectedItem(null)} className="w-full py-3 text-white/50 hover:text-white text-xs font-bold uppercase tracking-widest">
+                      ← Back to Gallery
+                    </button>
+                  </div>
+                </div>
+              </div>
+           </div>
+        </div>
+      )}
     </div>
   );
 };

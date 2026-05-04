@@ -2,23 +2,26 @@ import express from 'express';
 import { 
     createTicket, 
     getTickets,
-    getTicketById // Useful for clicking a specific ticket to see admin replies
+    getTicketById,
+    chatWithAI // Add this import from your updated controller
 } from '../controllers/supportController.js';
 import { protect } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
+// --- AI Chat Logic ---
+// @route   POST /api/v1/support/ai-chat
+// Triggered by the ChatBox.jsx component for real-time AI responses
+router.post('/ai-chat', chatWithAI);
+
+// --- Ticket Management ---
 // @route   POST /api/v1/support/create
-// Triggered when a user clicks 'Submit' on the support form
-router.post('/create', createTicket);
-router.post('/tickets', protect, createTicket);
+router.post('/create', protect, createTicket);
 
 // @route   GET /api/v1/support
-// Triggered when clicking the 'Support' section to view all tickets
 router.get('/', protect, getTickets);
 
 // @route   GET /api/v1/support/:id
-// Triggered when a user clicks a specific ticket to view its details/status
 router.get('/:id', protect, getTicketById);
 
 export default router;

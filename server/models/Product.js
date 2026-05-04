@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
-// Ensure this utility file exists on your server side
-import { PROPERTY_CATEGORIES } from '../utils/constants.js';
+// Update this import to match your constants.js variable name
+import { CATEGORIES } from '../utils/constants.js';
 
 const productSchema = new mongoose.Schema({
     name: { 
@@ -13,7 +13,7 @@ const productSchema = new mongoose.Schema({
     },
     category: { 
         type: String, 
-        enum: PROPERTY_CATEGORIES, 
+        enum: CATEGORIES, // Matches the updated constant
         required: [true, 'Category is required'] 
     },
     image: { 
@@ -27,7 +27,6 @@ const productSchema = new mongoose.Schema({
     }
 }, { timestamps: true });
 
-// Check if model already exists to prevent OverwriteModelError in development
 const Product = mongoose.models.Product || mongoose.model('Product', productSchema);
 
 export default Product;

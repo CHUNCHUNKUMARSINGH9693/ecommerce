@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import ChatBox from '../components/ChatBox';
 import TicketForm from '../components/TicketForm';
+import ChatMessage from '../components/ChatMessage';
 
 const Support = () => {
   const [activeTab, setActiveTab] = useState('chat');

@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react'; // Fixes the ReferenceError
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from "../../context/AuthContext"; 
+import API from '../../services/api'; 
 import { 
   ShoppingBag, Search, User, 
   ShoppingCart, Truck, Headset, Menu, X,
@@ -11,12 +12,16 @@ const Home = () => {
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { isAuthenticated } = useAuth(); 
+  
+  // This is the state that needed useEffect to work
+  const [displayCategories, setDisplayCategories] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   // Data for Categories
  const categories = [
   { name: "Home", icon: <Shirt size={20} />, color: "bg-orange-100", path: "/" },
   { name: "Shop", icon: <Smartphone size={20} />, color: "bg-blue-100", path: "#shop" },
-  { name: "New Arrival", icon: <Laptop size={20} />, color: "bg-purple-100", path: "#new-arrivals" },
+  { name: "Categories", icon: <Laptop size={20} />, color: "bg-purple-100", path: "#categories" },
   { name: "Deals", icon: <Watch size={20} />, color: "bg-green-100", path: "/deals" },
   { name: "Blog", icon: <Glasses size={20} />, color: "bg-yellow-100", path: "#blog" },
 ];
@@ -29,18 +34,36 @@ const Home = () => {
     { id: 4, name: "Casual Sneakers", price: "$69.99", img: "https://images.unsplash.com/photo-1560769629-975ec94e6a86?q=80&w=600", category: "Fashion" },
   ];
 
-  const newArrivals = [
-    { id: 1, name: "Elite Leather Boots", price: "$129.00", img: "https://images.unsplash.com/photo-1512436991641-6745cdb1723f?q=80&w=600" },
-    { id: 2, name: "SoundWave Speaker", price: "$179.00", img: "https://images.unsplash.com/photo-1518444020568-36e551326bee?q=80&w=600" },
-    { id: 3, name: "Performance Laptop", price: "$1,299.00", img: "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?q=80&w=600" },
-    { id: 4, name: "Premium Backpack", price: "$74.99", img: "https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?q=80&w=600" },
-  ];
-
   const blogPosts = [
     { title: "5 Trends Shaping 2026", snippet: "Learn which products are trending and how shoppers are choosing smarter styles.", date: "Apr 24, 2026" },
     { title: "Refresh Your Workspace", snippet: "Find the best gadgets and decor to upgrade productivity in style.", date: "Apr 18, 2026" },
     { title: "Styling Tips for Spring", snippet: "Mix bold pieces and subtle textures for a premium modern look.", date: "Apr 10, 2026" },
   ];
+
+useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        setLoading(true); // Start loading
+        const response = await API.get('/products/inventory');
+        if (response.data?.success) {
+          const products = response.data.data;
+          
+          const uniqueCats = [...new Set(products.map(p => p.category))];
+          const featuredItems = uniqueCats.map(cat => {
+            return products.find(p => p.category === cat);
+          }).slice(0, 4);
+
+          setDisplayCategories(featuredItems);
+        }
+      } catch (err) {
+        console.error("Inventory sync error:", err);
+      } finally {
+        setLoading(false); // Stop loading regardless of success or error
+      }
+    };
+    fetchCategories();
+  }, []);
+
 
   const handleAccountClick = () => {
     isAuthenticated ? navigate('/dashboard') : navigate('/login');
@@ -299,61 +322,93 @@ const Home = () => {
 
      {/* --- 4. NEW ARRIVALS & PROMO SECTION --- */}
 <section 
-  id="new-arrivals" 
-  className="scroll-mt-24 max-w-7xl mx-auto px-4 md:px-6 py-16 md:py-20 bg-slate-50 overflow-hidden"
->
-  <div className="grid gap-8 lg:grid-cols-12 items-center">
-    <div className="lg:col-span-5 relative rounded-[2rem] overflow-hidden bg-slate-950 text-white shadow-2xl">
-      <img 
-        src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=1000" 
-        className="w-full h-full object-cover mix-blend-overlay" 
-        alt="Spring Escape Sale"
-      />
-      <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent" />
-      <div className="absolute inset-0 p-6 md:p-8 lg:p-12 flex flex-col justify-end items-start">
-        <span className="inline-flex rounded-full border border-white/20 bg-white/10 px-3 md:px-4 py-2 text-[10px] uppercase tracking-[0.35em] text-slate-200">New Arrival</span>
-        <h3 className="mt-4 md:mt-6 text-3xl md:text-4xl lg:text-5xl font-black uppercase tracking-tight leading-tight">Latest drops in premium style</h3>
-        <p className="mt-3 md:mt-4 max-w-xs text-sm text-slate-300">From statement pieces to smart accessories, explore the freshest products designed for modern living.</p>
-        <button 
-          onClick={() => navigate('/login')}
-          className="mt-6 md:mt-8 rounded-full bg-sky-500 px-6 md:px-8 py-3 md:py-4 text-sm font-black uppercase tracking-[0.18em] text-slate-950 transition hover:bg-sky-400"
-        >
-          Discover now
-        </button>
-      </div>
-    </div>
-
-    <div className="lg:col-span-7 flex flex-col gap-6">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <p className="text-sm uppercase tracking-[0.35em] text-slate-500">Fresh arrivals</p>
-          <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tight text-slate-950">New Arrivals</h2>
-        </div>
-        <button 
-          onClick={() => navigate('/login')}
-          className="rounded-full border border-slate-200 bg-white px-4 md:px-5 py-3 text-xs font-bold uppercase tracking-[0.18em] text-slate-700 transition hover:bg-slate-950 hover:text-white"
-        >
-          View All
-        </button>
-      </div>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
-        {newArrivals.map((item) => (
-          <div key={item.id} onClick={() => navigate('/login')} className="group cursor-pointer overflow-hidden rounded-[1.8rem] border border-slate-200/20 bg-white shadow-xl transition hover:-translate-y-1.5 hover:shadow-2xl">
-            <div className="aspect-square overflow-hidden bg-slate-100">
-              <img src={item.img} alt={item.name} className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" />
-            </div>
-            <div className="p-4 md:p-5">
-              <div className="inline-flex rounded-full bg-slate-950/95 px-3 py-1 text-[10px] uppercase tracking-[0.18em] text-slate-100">New</div>
-              <h3 className="mt-3 md:mt-4 text-base md:text-lg font-black text-slate-950">{item.name}</h3>
-              <p className="mt-2 text-sm font-bold text-slate-700">{item.price}</p>
-            </div>
+      id="categories" 
+      className="scroll-mt-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-20 bg-slate-50 overflow-hidden"
+    >
+      <div className="grid gap-8 lg:grid-cols-12 items-stretch">
+        
+        {/* --- LEFT SIDE: Featured Banner (Stack on Mobile, 5-cols on Desktop) --- */}
+        <div className="lg:col-span-5 relative rounded-[1.5rem] md:rounded-[2rem] overflow-hidden bg-slate-950 text-white shadow-2xl min-h-[350px] lg:h-full">
+          <img 
+            src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?q=80&w=1000" 
+            className="absolute inset-0 w-full h-full object-cover opacity-50" 
+            alt="Product Collections"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-transparent" />
+          
+          <div className="relative h-full p-6 md:p-10 lg:p-12 flex flex-col justify-end items-start">
+            <span className="inline-flex rounded-full border border-white/20 bg-white/10 px-3 py-1.5 text-[9px] md:text-[10px] uppercase tracking-[0.3em] text-slate-200 backdrop-blur-sm">
+              Featured 2026
+            </span>
+            <h3 className="mt-4 text-2xl md:text-4xl lg:text-5xl font-black uppercase tracking-tight leading-tight">
+              Shop by <span className="text-sky-400">Category</span>
+            </h3>
+            <p className="mt-3 max-w-xs text-sm md:text-base text-slate-300 leading-relaxed">
+              Explore our curated collections synchronized directly from your product inventory.
+            </p>
+            <button 
+              onClick={() => navigate('/dashboard/work-samples')}
+              className="mt-6 md:mt-8 w-full sm:w-auto rounded-full bg-sky-500 px-8 py-3.5 text-xs md:text-sm font-black uppercase tracking-[0.2em] text-slate-950 transition-all hover:bg-sky-400 active:scale-95 shadow-lg"
+            >
+              Browse Inventory
+            </button>
           </div>
-        ))}
+        </div>
+
+        {/* --- RIGHT SIDE: Category Cards (Stack on Mobile, 7-cols on Desktop) --- */}
+        <div className="lg:col-span-7 flex flex-col gap-6">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between px-1">
+            <div className="space-y-1">
+              <p className="text-[10px] md:text-xs uppercase tracking-[0.4em] text-slate-400 font-bold">Top Picks</p>
+              <h2 className="text-2xl md:text-4xl font-black uppercase tracking-tight text-slate-950">Live Collections</h2>
+            </div>
+            <button 
+              onClick={() => navigate('/login')}
+              className="group flex items-center gap-2 text-[10px] md:text-xs font-black uppercase tracking-widest text-slate-500 hover:text-slate-950 transition-colors"
+            >
+              View All <span className="group-hover:translate-x-1 transition-transform">→</span>
+            </button>
+          </div>
+
+          {/* Fully Responsive Grid: 1 col on mobile, 2 cols on tablet/desktop */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
+            {loading ? (
+              // Skeleton Loader
+              [1, 2, 3, 4].map((n) => (
+                <div key={n} className="h-64 rounded-[1.8rem] bg-slate-200 animate-pulse" />
+              ))
+            ) : (
+              displayCategories.map((item) => (
+                <div 
+                  key={item._id} 
+                  onClick={() => navigate('/dashboard/work-samples')} 
+                  className="group cursor-pointer overflow-hidden rounded-[1.8rem] border border-slate-200 bg-white shadow-md transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl active:scale-[0.98]"
+                >
+                  <div className="aspect-[4/3] sm:aspect-square md:aspect-[4/3] overflow-hidden bg-slate-100">
+                    <img 
+                      src={item.image} 
+                      alt={item.category} 
+                      className="h-full w-full object-cover transition-transform duration-1000 group-hover:scale-110" 
+                    />
+                  </div>
+                  <div className="p-4 md:p-6 flex justify-between items-center">
+                    <div className="overflow-hidden">
+                      <span className="text-[8px] md:text-[9px] font-black uppercase tracking-[0.2em] text-sky-600 block mb-1">Explore</span>
+                      <h3 className="text-base md:text-lg font-black text-slate-900 uppercase tracking-tighter truncate">
+                        {item.category}
+                      </h3>
+                    </div>
+                    <div className="flex-shrink-0 h-10 w-10 md:h-12 md:w-12 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 group-hover:bg-sky-500 group-hover:text-white transition-all duration-300">
+                      <span className="text-xl">→</span>
+                    </div>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
       </div>
-    </div>
-  </div>
-</section>
+    </section>
 
 <section id="blog" className="scroll-mt-24 max-w-7xl mx-auto px-4 md:px-6 py-16 md:py-20">
   <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between mb-8 md:mb-10">

@@ -5,10 +5,9 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext'; 
 import API from '../../services/api'; 
 import { 
-  ShoppingBag, Search, User, 
-  ShoppingCart, Truck, Headset, Menu, X,
-  Smartphone, Watch, Shirt, Laptop, Briefcase, Glasses, Heart,
-  Users, ShieldCheck, RotateCcw
+  ShoppingBag, Search, User, Truck, Headset, Menu, X,
+  Smartphone, Watch, Briefcase, Glasses, Heart,
+  Users, ShieldCheck, RotateCcw, Shirt, Laptop, Sparkles, Utensils, ShoppingCart, Sofa, Dog
 } from 'lucide-react';
 
 import { productService } from '../../services/productService';
@@ -18,7 +17,7 @@ import {
   CATEGORY_STYLES
 } from "../../utils/constants";
 import { useCart } from "@/context/CartContext";
-
+import ShopByCategories from "../components/ShopByCategories";
 const Home = () => {
   const navigate = useNavigate();
   const [contactFormData, setContactFormData] = useState({
@@ -74,8 +73,8 @@ const handleNewsletterSubmit = async (e) => {
   const { isAuthenticated } = useAuth(); 
   
   // Data states
-const [displayCategories, setDisplayCategories] = useState([]);
-  const [trendingProducts, setTrendingProducts] = useState([]);
+  const [displayCategories, setDisplayCategories] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [inventory, setInventory] = useState([]); // Add this line!
   const [products, setProducts] = useState([]);
@@ -87,7 +86,7 @@ const [displayCategories, setDisplayCategories] = useState([]);
   const [selectedPost, setSelectedPost] = useState(null);
 
   // Categories navigation (Deals removed)
-  const categories = [
+  const navLinks = [
     { name: "Home", icon: <Shirt size={20} />, color: "bg-orange-100", path: "/" },
     { name: "Shop", icon: <Smartphone size={20} />, color: "bg-blue-100", path: "#shop" },
     { name: "Categories", icon: <Laptop size={20} />, color: "bg-purple-100", path: "#categories" },
@@ -95,6 +94,28 @@ const [displayCategories, setDisplayCategories] = useState([]);
     {name: "Contact", icon: <ShieldCheck size={20} />, color: "bg-pink-100", path: "#contact"},
     { name: "Blog", icon: <Glasses size={20} />, color: "bg-yellow-100", path: "#blog" },
   ];
+
+ const iconMap = {
+    "Electronics": <Laptop size={24} />,
+    "Fashion": <Shirt size={24} />,
+    "Beauty": <Sparkles size={24} />,
+    "Kitchen": <Utensils size={24} />,
+    "Grocery": <ShoppingCart size={24} />,
+    "Luxury": <Watch size={24} />,
+    "Furniture": <Sofa size={24} />,
+    "Pets": <Dog size={24} />,
+  };
+
+  const themeMap = {
+    0: "bg-blue-50 text-blue-600",
+    1: "bg-orange-50 text-orange-600",
+    2: "bg-purple-50 text-purple-600",
+    3: "bg-stone-50 text-stone-600",
+    4: "bg-emerald-50 text-emerald-600",
+    5: "bg-rose-50 text-rose-600",
+    6: "bg-green-50 text-green-600",
+    7: "bg-sky-50 text-sky-600",
+  };
 
 
   const allBlogPosts = [
@@ -163,47 +184,44 @@ const filteredProducts = products.filter((product) => {
 });
 
   // Replace your two separate useEffects with this cleaner version:
-useEffect(() => {
-  const initializeHome = async () => {
+
+  useEffect(() => {
+  const fetchAndGroupCategories = async () => {
     try {
       setLoading(true);
+      // Fetch products using your existing API setup
       const res = await API.get(`/products?t=${new Date().getTime()}`);      
-      // Extract products from { success: true, count: 1000, data: [...] }
       const allProducts = res.data?.data || [];
       setProducts(allProducts);
 
-      // Create a unique list of categories for the "Shop By Categories" section
       const uniqueCategoryMap = new Map();
 
       allProducts.forEach((product) => {
         const catName = product.category?.trim();
-        // Only add if we haven't seen this category yet and it's not empty
+        
+        // Only add a category if it's not already in our Map
         if (catName && !uniqueCategoryMap.has(catName.toLowerCase())) {
           uniqueCategoryMap.set(catName.toLowerCase(), {
             _id: product._id,
-            category: catName,
-            name: product.name,
-            // Use the established photo route for the category cover
+            name: catName, 
+            // This pulls the first product name as a sub-label like in your reference image
+            subLabel: product.name, 
             image: `http://localhost:5000/api/v1/products/product-photo/${product._id}`
           });
         }
       });
 
-      // Convert the Map values back to an array
-      const formattedCategories = Array.from(uniqueCategoryMap.values());
-      
-      console.log("PROCESSED CATEGORIES:", formattedCategories);
-      setDisplayCategories(formattedCategories);
-
+      setDisplayCategories(Array.from(uniqueCategoryMap.values()));
     } catch (error) {
-      console.error("HOME INITIALIZATION ERROR:", error);
+      console.error("Error fetching categories:", error);
     } finally {
       setLoading(false);
     }
   };
 
-  initializeHome();
+  fetchAndGroupCategories();
 }, []);
+
 
   const handleProtectedAction = (e, destination) => {
     if (e) e.stopPropagation(); 
@@ -255,7 +273,7 @@ const handleShowMore = () => {
 
       {/* DESKTOP NAV */}
       <nav className="hidden lg:flex items-center gap-8">
-        {categories.map((cat, idx) => (
+        {navLinks.map((cat, idx) => (
           <button
             key={idx}
             onClick={() => {
@@ -548,102 +566,7 @@ const handleShowMore = () => {
     </section>
 
       {/* SHOP BY CATEGORIES SECTION */}
-<section id="categories" className="py-20 px-4 md:px-10 lg:px-20 bg-white">
-  <div className="max-w-7xl mx-auto">
-    
-    {/* Section Header */}
-    <div className="flex items-center justify-center gap-4 mb-16">
-      <div className="hidden md:block h-[1px] w-12 lg:w-20 bg-slate-200"></div>
-      <h2 className="text-4xl md:text-6xl lg:text-7xl font-black text-slate-900 tracking-tight text-center uppercase">
-        Shop By Categories
-      </h2>
-      <div className="hidden md:block h-[1px] w-12 lg:w-20 bg-slate-200"></div>
-    </div>
-
-    {loading ? (
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        {[...Array(4)].map((_, i) => (
-          <div key={i} className="h-80 rounded-[2.5rem] bg-slate-100 animate-pulse" />
-        ))}
-      </div>
-    ) : (
-      CATEGORIES.map((catName) => {
-        // IMPROVED FILTER: Handles spacing and capitalization differences
-        const categoryItems = products.filter(
-          (item) => item.category?.trim().toLowerCase() === catName.trim().toLowerCase()
-        );
-
-        if (categoryItems.length === 0) return null;
-
-        return (
-          <div key={catName} className="mb-24 last:mb-0">
-            {/* Category Sub-heading */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-10">
-              <h3 className="text-3xl md:text-5xl font-black uppercase text-slate-900 tracking-tighter">
-                {CATEGORY_LABELS[catName] || catName}
-              </h3>
-              <button 
-                onClick={() => navigate("/dashboard/samples")}
-                className="w-fit text-xs font-black uppercase tracking-widest text-blue-600 border-b-2 border-blue-600 pb-1"
-              >
-                View Collection ({categoryItems.length})
-              </button>
-            </div>
-
-            {/* RESPONSIVE GRID: 1 col on mobile, 2 on tablet, 4 on desktop */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
-              {categoryItems.slice(0, 4).map((item) => {
-                const style = CATEGORY_STYLES[catName] || CATEGORY_STYLES["Electronics"];
-
-                return (
-                  <button
-                    key={item._id}
-                    onClick={() => navigate(isAuthenticated ? "/dashboard/samples" : "/login")}
-                    className={`group w-full text-left rounded-[2rem] p-6 md:p-8 transition-all duration-500 hover:shadow-2xl hover:-translate-y-3 ${style.color} border border-transparent hover:border-slate-200 shadow-sm`}
-                  >
-                    {/* Icon Header */}
-                    <div className="flex items-center gap-3 mb-6">
-                      <div className="h-10 w-10 rounded-xl bg-white flex items-center justify-center shadow-sm">
-                        <span className="text-xl">{style.icon}</span>
-                      </div>
-                      <h4 className="text-[10px] font-black text-slate-800 uppercase tracking-widest">
-                        {style.label}
-                      </h4>
-                    </div>
-
-                    {/* Product Image */}
-                    <div className="relative aspect-square w-full flex items-center justify-center overflow-hidden rounded-3xl bg-white mb-6 p-4 shadow-inner">
-                      <img
-                        src={`http://localhost:5000/api/v1/products/product-photo/${item._id}`}
-                        alt={item.name}
-                        className="w-full h-full object-contain transition-transform duration-700 group-hover:scale-110"
-                        onError={(e) => { e.target.src = "https://placehold.co/400?text=Product"; }}
-                      />
-                    </div>
-
-                    {/* Content */}
-                    <div className="space-y-2">
-                      <p className="text-base font-black text-slate-900 truncate uppercase">
-                        {item.name}
-                      </p>
-                      <div className="flex items-center justify-between">
-                        <span className="text-lg font-bold text-slate-700">${item.price}</span>
-                        <div className="h-8 w-8 rounded-full bg-slate-900 text-white flex items-center justify-center transform translate-x-2 opacity-0 group-hover:translate-x-0 group-hover:opacity-100 transition-all">
-                          →
-                        </div>
-                      </div>
-                    </div>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-        );
-      })
-    )}
-  </div>
-</section>
-
+     <ShopByCategories />
 
       {/* About - #about */}
       <section id="about" className="py-24 px-6 lg:px-20 bg-white text-slate-900 border-y border-slate-50">
@@ -707,7 +630,7 @@ const handleShowMore = () => {
     {/* SECTION HEADER */}
     <div className="text-center mb-20">
       <h2 className="text-5xl md:text-7xl font-black text-slate-900 tracking-tighter uppercase mb-4">
-        Get In Touch
+        Get <span className="text-indigo-600">In</span> Touch
       </h2>
       <div className="flex items-center justify-center gap-4">
         <div className="h-[2px] w-12 bg-blue-600"></div>
@@ -777,7 +700,7 @@ const handleShowMore = () => {
                     required
                     value={contactFormData.name}
                     onChange={(e) => setContactFormData({...contactFormData, name: e.target.value})} 
-                    placeholder="Chunchun Kumar"
+                    placeholder="full name"
                     className="w-full px-8 py-5 bg-slate-50 border-2 border-transparent focus:border-blue-600 focus:bg-white rounded-[1.5rem] outline-none transition-all font-bold text-slate-900 placeholder:text-slate-300"
                   />
                 </div>

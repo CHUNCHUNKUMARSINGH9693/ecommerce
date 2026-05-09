@@ -8,22 +8,22 @@ export const DEAL_STATUS = {
 
 // Core categories used for Mongoose Schema 'enum' validation
 export const CATEGORIES = [
-    "Electronics",
-    "Fashion",
-    "Beauty",
-    "Home",
-    "Grocery",
-    "Luxury"
+  "Electronics",
+  "Fashion",
+  "Beauty",
+  "Home",
+  "Grocery",
+  "Luxury",
 ];
 
-// Human-readable labels for Frontend UI (e.g., Dropdowns/Filters)
+// Labels for frontend UI
 export const CATEGORY_LABELS = {
-    "Electronics": "Electronics & Tech",
-    "Fashion": "Fashion & Apparel",
-    "Beauty": "Beauty & Fragrance",
-    "Home": "Home & Kitchen",
-    "Grocery": "Grocery & Food",
-    "Luxury": "Luxury & Watches"
+  Electronics: "Electronics & Tech",
+  Fashion: "Fashion & Apparel",
+  Beauty: "Beauty & Fragrance",
+  Home: "Home & Kitchen",
+  Grocery: "Grocery & Food",
+  Luxury: "Luxury & Watches",
 };
 
 // Transaction or Reward point types

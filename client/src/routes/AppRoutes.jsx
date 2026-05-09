@@ -14,7 +14,9 @@ import Referrals from "../referrals/pages/Referrals";
 import Support from "../support/pages/Support";
 import Profile from "../profile/pages/Profile";
 import Cart from "../Cart/Cart";
-import CheckoutPage from "../Checkout/pages/CheckoutPage"; // Ensure path matches your folder structure
+import CheckoutPage from "../Checkout/pages/CheckoutPage";
+// Import the new Category Detail page
+import CategoryDetail from "../auth/components/CategoryDetail"; 
 
 const AppRoutes = () => {
   const { isAuthenticated, loading } = useAuth();
@@ -30,15 +32,21 @@ const AppRoutes = () => {
 
   return (
     <Routes>
-      {/* 1. PUBLIC / AUTH ROUTES */}
-      <Route path="/" element={!isAuthenticated ? <Home /> : <Navigate to="/dashboard" replace />} />
+      {/* 1. PUBLIC ROUTES */}
+      <Route path="/" element={<Home />} />
+      
+      {/* New: Dynamic Category Detail Route 
+          This allows users to view category details/products directly */}
+      <Route path="/category/:categoryId" element={<CategoryDetail />} />
+
+      {/* Auth Redirects */}
       <Route path="/login" element={!isAuthenticated ? <Login /> : <Navigate to="/dashboard" replace />} />
       <Route path="/register" element={!isAuthenticated ? <Register /> : <Navigate to="/dashboard" replace />} />
 
       {/* 2. PROTECTED DASHBOARD SHELL */}
       <Route 
         path="/dashboard" 
-        element={isAuthenticated ? <MainLayout /> : <Navigate to="/" replace />}
+        element={isAuthenticated ? <MainLayout /> : <Navigate to="/login" replace />}
       >
         {/* Default View: /dashboard */}
         <Route index element={<Dashboard />} />

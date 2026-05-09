@@ -158,44 +158,48 @@ export const productPhotoController = async (req, res) => {
   try {
     const pid = req.params.pid;
 
-    // Prevent Mongoose CastError when pid is missing/undefined
+    // Validate pid
     if (!pid) {
       return res.status(400).json({
         success: false,
-        message: 'Product id (pid) is required',
+        message: "Product id is required",
       });
     }
 
-    // Validate ObjectId format
     if (!mongoose.isValidObjectId(pid)) {
       return res.status(400).json({
         success: false,
-        message: 'Invalid product id (pid)',
+        message: "Invalid product id",
       });
     }
 
+    // Find product
     const product = await Product.findById(pid);
 
     if (!product) {
       return res.status(404).json({
         success: false,
-        message: 'Product not found',
+        message: "Product not found",
       });
     }
 
-    // Your Product model stores an image URL string (field: `image`),
-    // not binary photo data. Return the URL so the frontend can render it.
-    return res.status(200).json({
-      success: true,
-      image: product.image,
-    });
+    // Check image exists
+    if (!product.image) {
+      return res.redirect(
+        "https://placehold.co/600x600/png?text=No+Image"
+      );
+    }
+
+    // Redirect browser directly to image URL
+    return res.redirect(product.image);
+
   } catch (error) {
-    console.log(error);
+    console.log("PHOTO CONTROLLER ERROR:", error);
+
     return res.status(500).json({
       success: false,
-      message: 'Error while getting product image',
-      error: error?.message || error,
+      message: "Error while getting product image",
+      error: error.message,
     });
   }
 };
-

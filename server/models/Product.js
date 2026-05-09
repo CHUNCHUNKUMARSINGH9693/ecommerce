@@ -1,5 +1,13 @@
 import mongoose from "mongoose";
-import { CATEGORIES } from "../utils/constants.js";
+
+const CATEGORIES = [
+  "Electronics",
+  "Fashion",
+  "Beauty",
+  "Home",
+  "Grocery",
+  "Luxury",
+];
 
 const productSchema = new mongoose.Schema(
   {
@@ -22,6 +30,7 @@ const productSchema = new mongoose.Schema(
       min: [0, "Price cannot be negative"],
     },
 
+    // Category
     category: {
       type: String,
       enum: {
@@ -29,9 +38,10 @@ const productSchema = new mongoose.Schema(
         message: "{VALUE} is not a supported category",
       },
       required: [true, "Category is required"],
+      trim: true,
     },
 
-    // Image URL
+    // Product Image URL
     image: {
       type: String,
       required: [true, "Image URL is required"],
@@ -40,12 +50,14 @@ const productSchema = new mongoose.Schema(
         "https://images.unsplash.com/photo-1523275335684-37898b6baf30",
     },
 
+    // Product Tag
     tag: {
       type: String,
       enum: ["new-arrival", "best-seller", "none"],
       default: "none",
     },
 
+    // Stock Quantity
     stock: {
       type: Number,
       default: 10,

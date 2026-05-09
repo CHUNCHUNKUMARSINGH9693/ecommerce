@@ -1,4 +1,5 @@
 import React from 'react';
+import { Toaster } from 'react-hot-toast'; // Highly recommended for e-commerce feedback
 
 // Context Providers
 import { AuthProvider } from './context/AuthContext';
@@ -13,11 +14,15 @@ function App() {
     <AuthProvider>
       <DashboardProvider>
         <RewardProvider>
-          {/* 
-              REMOVED: Stripe Elements wrapper. 
-              Razorpay handles its own UI through the window.Razorpay object. 
-          */}
-          <div className="min-h-screen font-sans antialiased bg-[#120E0B] text-white selection:bg-orange-500/30">
+          {/* Main Container */}
+          <div className="min-h-screen font-sans antialiased bg-[#FCFCFD] text-slate-900 selection:bg-orange-500/30">
+            
+            {/* Global Toaster: 
+               This allows you to show "Added to Cart" or "Logged In" 
+               popups from anywhere in your app.
+            */}
+            <Toaster position="top-center" reverseOrder={false} />
+
             <AppRoutes />
           </div>
         </RewardProvider>

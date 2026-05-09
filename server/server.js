@@ -18,6 +18,7 @@ import referralRoutes from "./routes/referralRoutes.js";
 import reportRoutes from "./routes/reportRoutes.js";
 import supportRoutes from "./routes/supportRoutes.js";
 import productRoutes from "./routes/productRoutes.js";
+import contactRoutes from './routes/contactRoutes.js';
 import inventoryRoutes from "./routes/inventoryRoutes.js";
 import paymentRoutes from "./routes/paymentRoutes.js"; // 1. Added Payment Routes
 
@@ -94,8 +95,11 @@ app.use("/api/v1/referrals", referralRoutes);
 app.use("/api/v1/reports", reportRoutes);
 app.use("/api/v1/support", supportRoutes);
 app.use("/api/v1/products", productRoutes);
+app.use('/api/v1/contact', contactRoutes);
 app.use("/api/v1/inventory", inventoryRoutes);
 app.use("/api/v1/payments", paymentRoutes); // 3. Registered Payment Routes
+
+
 
 // Health check
 app.get("/health", (req, res) => {

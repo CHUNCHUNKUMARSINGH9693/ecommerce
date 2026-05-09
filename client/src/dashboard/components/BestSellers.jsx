@@ -1,8 +1,8 @@
 import React from 'react';
-import { Star } from 'lucide-react';
+import { Star, Users, ShoppingBag, Truck } from 'lucide-react';
 
-const BestSellers = () => {
-  const products = [
+const BestSellers = ({ products = [] }) => {
+  const displayProducts = products.length > 0 ? products.slice(0, 2) : [
     {
       id: 1,
       name: "Wireless Headphones",
@@ -28,10 +28,10 @@ const BestSellers = () => {
 
       {/* Grid: 1 column on mobile, 2 columns on small screens and up */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        {products.map((product) => (
+        {displayProducts.map((product) => (
           <div key={product.id} className="bg-[#241e1b] p-4 rounded-2xl relative border border-white/5 group">
             {/* Hot Badge */}
-            {product.isHot && (
+            {(product.isHot || product.tag === 'best-seller') && (
               <span className="absolute top-4 left-4 bg-orange-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full z-10 uppercase">
                 Hot
               </span>
@@ -40,7 +40,7 @@ const BestSellers = () => {
             {/* Image Container */}
             <div className="aspect-square w-full mb-4 overflow-hidden rounded-xl bg-[#1a1614] flex items-center justify-center">
               <img 
-                src={product.image} 
+                src={product.image || product.img || 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=800&q=80'} 
                 alt={product.name} 
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
               />
@@ -48,7 +48,9 @@ const BestSellers = () => {
 
             {/* Product Details */}
             <div className="space-y-2">
-              <p className="text-white text-xl font-bold">${product.price}</p>
+              <p className="text-white text-xl font-bold">
+                {typeof product.price === 'number' ? `$${product.price.toFixed(2)}` : `$${product.price}`}
+              </p>
               <div className="flex items-center justify-between">
                 <div className="flex text-orange-500">
                   {[...Array(5)].map((_, i) => (
@@ -71,3 +73,4 @@ const BestSellers = () => {
 };
 
 export default BestSellers;
+

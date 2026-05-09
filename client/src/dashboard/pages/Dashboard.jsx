@@ -13,17 +13,27 @@ import ActiveDealsCard from '../../actions/components/ActiveDealsCard';
 import RewardsCard from '../../actions/components/RewardsCard';
 import SupportCard from '../../actions/components/SupportCard';
 import BestSellers from '../components/BestSellers';
+import { productService } from '../../services/productService.js';
+import { useState } from 'react';
+
+
 
 
 const Dashboard = () => {
   const navigate = useNavigate();
+  const [bestSellers, setBestSellers] = useState([]);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (!token) {
       navigate('/', { replace: true });
+      return;
     }
+
+    // Fetch best sellers
+    productService.getBestSellers(2).then(setBestSellers).catch(console.error);
   }, [navigate]);
+
 
   return (
     <div className="bg-[#120E0B] min-h-screen text-white p-4 md:p-8 lg:p-12 space-y-12 animate-in fade-in slide-in-from-bottom-6 duration-1000 pb-24 md:pb-12 selection:bg-orange-500/30">
@@ -90,8 +100,9 @@ const Dashboard = () => {
         {/* RIGHT COLUMN: ACCOUNT & TIERS */}
         <div className="space-y-10 w-full">   
           <div className="flex justify-center w-full">
-           <BestSellers />
+           <BestSellers products={bestSellers} />
           </div>
+
 
           <div className="hover:scale-[1.02] transition-transform duration-500">
             <AccountHealth />

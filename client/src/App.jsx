@@ -8,6 +8,7 @@ import { RewardProvider } from './context/RewardContext';
 
 // Routes
 import AppRoutes from './routes/AppRoutes';
+import ScrollToTop from './auth/components/ScrollToTop';
 
 function App() {
   return (
@@ -22,7 +23,7 @@ function App() {
                popups from anywhere in your app.
             */}
             <Toaster position="top-center" reverseOrder={false} />
-
+            <ScrollToTop /> 
             <AppRoutes />
           </div>
         </RewardProvider>

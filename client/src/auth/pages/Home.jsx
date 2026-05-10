@@ -261,7 +261,11 @@ const handleShowMore = () => {
           {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
 
-        <Link to="/" className="flex items-center gap-2 group">
+        <Link 
+           to="/" 
+           onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} // Add this!
+           className="flex items-center gap-2 group"
+   >
           <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-slate-900 text-white transition-transform group-hover:scale-105">
             <ShoppingBag size={20} />
           </div>
@@ -275,18 +279,21 @@ const handleShowMore = () => {
       <nav className="hidden lg:flex items-center gap-8">
         {navLinks.map((cat, idx) => (
           <button
-            key={idx}
-            onClick={() => {
-              if (cat.path.startsWith("#")) {
-                document.getElementById(cat.path.replace("#", ""))?.scrollIntoView({ behavior: "smooth" });
-              } else {
-                navigate(cat.path);
-              }
-            }}
-            className="text-sm font-bold uppercase tracking-widest text-slate-600 hover:text-black transition"
-          >
-            {cat.name}
-          </button>
+           key={idx}
+           onClick={() => {
+           if (cat.path === "/") {
+           window.scrollTo({ top: 0, behavior: "smooth" }); // Handles the Home link
+           navigate("/");
+         } else if (cat.path.startsWith("#")) {
+           document.getElementById(cat.path.replace("#", ""))?.scrollIntoView({ behavior: "smooth" });
+        } else {
+          navigate(cat.path);
+       }
+     }}
+         className="text-sm font-bold uppercase tracking-widest text-slate-600 hover:text-black transition"
+       >
+        {cat.name}
+      </button>
         ))}
       </nav>
 

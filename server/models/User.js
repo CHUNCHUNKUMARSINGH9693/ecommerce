@@ -3,11 +3,24 @@ import bcrypt from "bcryptjs";
 
 const userSchema = new mongoose.Schema(
   {
-    name: { type: String, required: true },
+    name: {
+      type: String,
+      required: true,
+      trim: true,
+    },
 
-    email: { type: String, required: true, unique: true, lowercase: true, trim: true },
+    email: {
+      type: String,
+      required: true,
+      unique: true,
+      lowercase: true,
+      trim: true,
+    },
 
-    password: { type: String, required: true },
+    password: {
+      type: String,
+      required: true,
+    },
 
     role: {
       type: String,
@@ -33,31 +46,55 @@ const userSchema = new mongoose.Schema(
       default: false,
     },
   },
-  { timestamps: true }
+  {
+    timestamps: true,
+  }
 );
 
-userSchema.pre("validate", function (next) {
+// ✅ BEFORE VALIDATE
+userSchema.pre("validate", function () {
+
+  // Normalize Email
   if (this.email) {
-    this.email = this.email.toLowerCase();
+    this.email = this.email.toLowerCase().trim();
   }
 
+  // Generate Referral Code
   if (!this.referralCode) {
-    this.referralCode = `REF${Math.random().toString(36).slice(2, 10).toUpperCase()}`;
+    this.referralCode = `REF${Math.random()
+      .toString(36)
+      .slice(2, 10)
+      .toUpperCase()}`;
+  }
+});
+
+// ✅ HASH PASSWORD
+userSchema.pre("save", async function () {
+
+  // Skip if password not modified
+  if (!this.isModified("password")) {
+    return;
   }
 
-  next();
+  const salt = await bcrypt.genSalt(10);
+
+  this.password = await bcrypt.hash(
+    this.password,
+    salt
+  );
 });
 
-// 🔐 HASH PASSWORD
-userSchema.pre("save", async function () {
-  if (!this.isModified("password")) return;
-
-  this.password = await bcrypt.hash(this.password, 10);
-});
-
-// 🔑 MATCH PASSWORD
-userSchema.methods.matchPassword = async function (enteredPassword) {
-  return await bcrypt.compare(enteredPassword, this.password);
+// ✅ MATCH PASSWORD
+userSchema.methods.matchPassword = async function (
+  enteredPassword
+) {
+  return await bcrypt.compare(
+    enteredPassword,
+    this.password
+  );
 };
 
-export default mongoose.model("User", userSchema);
+// ✅ EXPORT MODEL
+const User = mongoose.model("User", userSchema);
+
+export default User;

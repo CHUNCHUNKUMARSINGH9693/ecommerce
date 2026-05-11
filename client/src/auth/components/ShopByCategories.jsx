@@ -127,7 +127,7 @@ const ShopByCategories = () => {
         {/* Header Section */}
         <div className="flex flex-col items-center mb-16 text-center">
           <h2 className="text-4xl md:text-5xl font-black text-slate-900 mb-6 tracking-tighter uppercase">
-            Shop By Categories
+            Shop <span className="text-indigo-600">By Categories</span> 
           </h2>
           <div className="flex items-center gap-4">
             <span className="h-[2px] w-12 bg-slate-200"></span>

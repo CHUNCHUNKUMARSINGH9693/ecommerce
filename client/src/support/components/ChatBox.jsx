@@ -3,7 +3,7 @@ import API from '../../services/api';
 
 const ChatBox = () => {
   const [messages, setMessages] = useState([
-    { sender: 'system', text: 'Welcome to Utkarsh Home. How can I assist you with your property search today?', time: '10:00 AM' }
+    { sender: 'system', text: 'Welcome to Shop, How can i assist you?', time: '10:00 AM' }
   ]);
   const [inputValue, setInputValue] = useState('');
   const [isTyping, setIsTyping] = useState(false);

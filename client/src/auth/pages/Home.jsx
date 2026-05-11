@@ -496,7 +496,7 @@ const handleShowMore = () => {
             products.slice(0, 8).map((p) => (
               <div 
                 key={p._id || p.id} 
-                onClick={() => navigate(`/product/${p._id || p.id}`)}
+                onClick={() => navigate(`/products/${p._id || p.id}`)}
                 className="group cursor-pointer flex flex-col bg-white border border-slate-200 rounded-3xl overflow-hidden hover:shadow-2xl hover:shadow-slate-200/50 transition-all duration-500"
               >
                 {/* Image Container */}
@@ -572,6 +572,8 @@ const handleShowMore = () => {
       </div>
     </section>
 
+
+
       {/* SHOP BY CATEGORIES SECTION */}
      <ShopByCategories />
 
@@ -637,7 +639,7 @@ const handleShowMore = () => {
     {/* SECTION HEADER */}
     <div className="text-center mb-20">
       <h2 className="text-5xl md:text-7xl font-black text-slate-900 tracking-tighter uppercase mb-4">
-        Get <span className="text-indigo-600">In</span> Touch
+        Get <span className="text-indigo-600">In Touch</span> 
       </h2>
       <div className="flex items-center justify-center gap-4">
         <div className="h-[2px] w-12 bg-blue-600"></div>

@@ -185,30 +185,34 @@ const filteredProducts = products.filter((product) => {
 
   // Replace your two separate useEffects with this cleaner version:
 
-  useEffect(() => {
+ useEffect(() => {
   const fetchAndGroupCategories = async () => {
     try {
       setLoading(true);
-      // Fetch products using your existing API setup
-      const res = await API.get(`/products?t=${new Date().getTime()}`);      
+
+      const res = await API.get(`/products?t=${new Date().getTime()}`);
+
+      console.log("FULL RESPONSE:", res);
+      console.log("RESPONSE DATA:", res.data);
+
       const allProducts = res.data?.data || [];
-      console.log("Products from API:", allProducts);
+
+      console.log("ALL PRODUCTS:", allProducts);
+      console.log("COUNT:", allProducts.length);
+
       setProducts(allProducts);
-      console.log("Products state updated");
 
       const uniqueCategoryMap = new Map();
 
       allProducts.forEach((product) => {
         const catName = product.category?.trim();
-        
-        // Only add a category if it's not already in our Map
+
         if (catName && !uniqueCategoryMap.has(catName.toLowerCase())) {
           uniqueCategoryMap.set(catName.toLowerCase(), {
             _id: product._id,
-            name: catName, 
-            // This pulls the first product name as a sub-label like in your reference image
-            subLabel: product.name, 
-            image: `https://ecommerce-1-8s8i.onrender.com/api/v1/products/product-photo/${product._id}`
+            name: catName,
+            subLabel: product.name,
+            image: product.image,
           });
         }
       });
@@ -223,7 +227,6 @@ const filteredProducts = products.filter((product) => {
 
   fetchAndGroupCategories();
 }, []);
-
 
   const handleProtectedAction = (e, destination) => {
     if (e) e.stopPropagation(); 

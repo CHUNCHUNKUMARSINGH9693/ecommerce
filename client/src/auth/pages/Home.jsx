@@ -192,7 +192,9 @@ const filteredProducts = products.filter((product) => {
       // Fetch products using your existing API setup
       const res = await API.get(`/products?t=${new Date().getTime()}`);      
       const allProducts = res.data?.data || [];
+      console.log("Products from API:", allProducts);
       setProducts(allProducts);
+      console.log("Products state updated");
 
       const uniqueCategoryMap = new Map();
 
@@ -206,7 +208,7 @@ const filteredProducts = products.filter((product) => {
             name: catName, 
             // This pulls the first product name as a sub-label like in your reference image
             subLabel: product.name, 
-            image: `http://localhost:5000/api/v1/products/product-photo/${product._id}`
+            image: `https://ecommerce-1-8s8i.onrender.com/api/v1/products/product-photo/${product._id}`
           });
         }
       });

@@ -23,10 +23,18 @@ const WorkSamples = () => {
   }, []);
 
   // Generate dynamic categories (Electronics, Fashion, etc.)
-  const categories = useMemo(() => {
-    const uniqueCats = ['All', ...new Set(products.map(item => item.category))];
-    return uniqueCats;
-  }, [products]);
+ const categories = useMemo(() => {
+  // Extract unique categories from product list
+  const uniqueCats = [...new Set(products.map(item => item.category))];
+  
+  // Filter out 'RESIDENTIAL' (using toUpperCase to ensure it catches 'Residential' or 'residential')
+  const filteredCats = uniqueCats.filter(
+    (cat) => cat && cat.toUpperCase() !== 'RESIDENTIAL'
+  );
+  
+  // Return 'All' followed by the remaining categories
+  return ['All', ...filteredCats];
+}, [products]);
 
   // Filter products based on selected tab
   const filteredProducts = activeCategory === 'All' 

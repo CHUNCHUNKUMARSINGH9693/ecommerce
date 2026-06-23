@@ -1,7 +1,7 @@
 import React from 'react';
+import { TrendingUp, TrendingDown, Minus } from 'lucide-react';
 
 const StatsList = () => {
-  // Mock data for the statistics
   const secondaryStats = [
     {
       label: "Approval Rate",
@@ -30,42 +30,50 @@ const StatsList = () => {
   ];
 
   return (
-    <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-      <div className="flex justify-between items-center mb-4">
-        <h3 className="font-bold text-gray-800">Key Statistics</h3>
-        <button className="text-indigo-600 text-xs font-semibold hover:underline">
+    <div className="bg-[#110C0A] p-8 rounded-[2.5rem] border border-white/5 shadow-2xl">
+      <div className="flex justify-between items-center mb-8">
+        <h3 className="font-black uppercase italic text-lg tracking-tighter text-white">
+          Key Statistics <span className="text-orange-600">.</span>
+        </h3>
+        <button className="text-white/20 text-[10px] font-black uppercase tracking-widest hover:text-orange-500 transition-colors">
           View All
         </button>
       </div>
 
-      <div className="space-y-4">
+      <div className="space-y-3">
         {secondaryStats.map((stat, index) => (
           <div 
             key={index} 
-            className="flex items-center justify-between p-3 rounded-xl hover:bg-gray-50 transition-colors duration-200"
+            className="flex items-center justify-between p-5 rounded-2xl bg-white/[0.02] border border-white/5 hover:border-orange-500/30 hover:bg-white/[0.04] transition-all duration-300 group"
           >
-            <div className="space-y-0.5">
-              <p className="text-xs font-medium text-gray-500 uppercase tracking-tight">
+            <div className="space-y-1">
+              <p className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] italic group-hover:text-white/50 transition-colors">
                 {stat.label}
               </p>
-              <p className="text-sm text-gray-400 text-[11px]">
+              <p className="text-[10px] text-orange-500/60 font-bold uppercase tracking-tight">
                 {stat.detail}
               </p>
             </div>
 
             <div className="text-right">
-              <p className="text-lg font-bold text-gray-900 leading-none">
+              <p className="text-xl font-black text-white italic tracking-tighter">
                 {stat.value}
               </p>
               <div className="mt-1 flex justify-end">
                 {stat.trend === "up" && (
-                  <span className="text-emerald-500 text-[10px]">▲</span>
+                  <div className="bg-emerald-500/10 p-1 rounded-md border border-emerald-500/20">
+                    <TrendingUp size={12} className="text-emerald-500" />
+                  </div>
                 )}
                 {stat.trend === "down" && (
-                  <span className="text-rose-500 text-[10px]">▼</span>
+                  <div className="bg-rose-500/10 p-1 rounded-md border border-rose-500/20">
+                    <TrendingDown size={12} className="text-rose-500" />
+                  </div>
                 )}
                 {stat.trend === "neutral" && (
-                  <span className="text-gray-300 text-[10px]">●</span>
+                  <div className="bg-white/5 p-1 rounded-md border border-white/10">
+                    <Minus size={12} className="text-white/20" />
+                  </div>
                 )}
               </div>
             </div>
@@ -73,10 +81,11 @@ const StatsList = () => {
         ))}
       </div>
 
-      {/* Mini Footer/Notice in the list */}
-      <div className="mt-6 pt-4 border-t border-gray-50 text-center">
-        <p className="text-[10px] text-gray-400 italic">
-          Stats are updated every 24 hours.
+      {/* Modernized Footer */}
+      <div className="mt-8 pt-6 border-t border-white/5 flex items-center justify-center gap-2">
+        <span className="w-1.5 h-1.5 rounded-full bg-orange-600 animate-pulse" />
+        <p className="text-[9px] text-white/20 font-black uppercase tracking-[0.2em]">
+          Live sync active: 24h refresh
         </p>
       </div>
     </div>

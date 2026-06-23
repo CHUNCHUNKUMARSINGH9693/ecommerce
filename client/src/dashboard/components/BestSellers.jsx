@@ -1,67 +1,76 @@
 import React from 'react';
-import { Star, Users, ShoppingBag, Truck } from 'lucide-react';
+import { Star, MoreHorizontal } from 'lucide-react';
 
 const BestSellers = ({ products = [] }) => {
   const displayProducts = products.length > 0 ? products.slice(0, 2) : [
     {
       id: 1,
-      name: "Wireless Headphones",
-      price: 89.99,
+      name: "AirWave Pro Max",
+      price: 129.99,
       image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=800&q=80",
       isHot: true,
     },
     {
       id: 2,
-      name: "Casual Sneakers",
-      price: 59.99,
-      image: "https://images.unsplash.com/photo-1549298916-b41d501d3772?auto=format&fit=crop&w=800&q=80",
+      name: "Swift-Run V2",
+      price: 79.99,
+      image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=800&q=80",
       isHot: false,
     }
   ];
 
   return (
-    <div className="bg-[#1a1614] p-6 rounded-3xl w-full max-w-4xl border border-white/5">
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-white text-lg font-semibold uppercase tracking-wider">Best Sellers</h2>
-        <button className="text-orange-500 text-xs uppercase font-bold hover:underline">View All</button>
+    <div className="bg-[#1A1613] p-6 rounded-[2rem] border border-white/5 shadow-2xl w-full">
+      <div className="flex justify-between items-end mb-8">
+        <div>
+          <h2 className="text-white text-lg font-black uppercase tracking-[0.2em] italic">Best Sellers</h2>
+          <div className="h-1 w-12 bg-orange-600 mt-1 rounded-full" />
+        </div>
+        <button className="text-white/30 text-[10px] uppercase font-black tracking-widest hover:text-orange-500 transition-colors">
+          View All
+        </button>
       </div>
 
-      {/* Grid: 1 column on mobile, 2 columns on small screens and up */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
         {displayProducts.map((product) => (
-          <div key={product.id} className="bg-[#241e1b] p-4 rounded-2xl relative border border-white/5 group">
-            {/* Hot Badge */}
-            {(product.isHot || product.tag === 'best-seller') && (
-              <span className="absolute top-4 left-4 bg-orange-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full z-10 uppercase">
-                Hot
-              </span>
-            )}
-            
-            {/* Image Container */}
-            <div className="aspect-square w-full mb-4 overflow-hidden rounded-xl bg-[#1a1614] flex items-center justify-center">
-              <img 
-                src={product.image || product.img || 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=800&q=80'} 
-                alt={product.name} 
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-              />
-            </div>
+          <div key={product.id} className="group relative">
+            {/* Card Background with Glow */}
+            <div className="bg-[#241E1B] p-5 rounded-[1.5rem] border border-white/5 group-hover:border-orange-500/30 transition-all duration-500 h-full flex flex-col items-center">
+              
+              {/* Product Showcase (Podium Style) */}
+              <div className="relative w-full aspect-square mb-6 flex items-center justify-center">
+                {/* 3D Base/Podium Shadow */}
+                <div className="absolute bottom-4 w-3/4 h-8 bg-black/40 blur-xl rounded-[100%] group-hover:scale-110 transition-transform duration-500" />
+                
+                <img 
+                  src={product.image} 
+                  alt={product.name} 
+                  className="relative z-10 w-full h-full object-contain transform group-hover:-translate-y-4 transition-transform duration-500 drop-shadow-[0_20px_30px_rgba(0,0,0,0.5)]"
+                />
 
-            {/* Product Details */}
-            <div className="space-y-2">
-              <p className="text-white text-xl font-bold">
-                {typeof product.price === 'number' ? `$${product.price.toFixed(2)}` : `$${product.price}`}
-              </p>
-              <div className="flex items-center justify-between">
-                <div className="flex text-orange-500">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} size={14} fill="currentColor" />
-                  ))}
-                </div>
-                {/* Options menu dots */}
-                <div className="flex gap-1">
-                  <div className="w-1 h-1 bg-gray-600 rounded-full"></div>
-                  <div className="w-1 h-1 bg-gray-600 rounded-full"></div>
-                  <div className="w-1 h-1 bg-gray-600 rounded-full"></div>
+                {/* Hot Badge */}
+                {product.isHot && (
+                  <div className="absolute top-0 left-0 bg-orange-600 text-white text-[8px] font-black px-3 py-1 rounded-full uppercase tracking-widest shadow-lg z-20">
+                    Hot
+                  </div>
+                )}
+              </div>
+
+              {/* Price & Rating */}
+              <div className="w-full text-center mt-auto">
+                <p className="text-white text-2xl font-black italic tracking-tighter mb-2">
+                  ${product.price}
+                </p>
+                
+                <div className="flex items-center justify-between pt-4 border-t border-white/5">
+                  <div className="flex gap-0.5 text-orange-500">
+                    {[...Array(5)].map((_, i) => (
+                      <Star key={i} size={10} fill="currentColor" />
+                    ))}
+                  </div>
+                  <button className="text-white/20 hover:text-white transition-colors">
+                    <MoreHorizontal size={16} />
+                  </button>
                 </div>
               </div>
             </div>
@@ -73,4 +82,3 @@ const BestSellers = ({ products = [] }) => {
 };
 
 export default BestSellers;
-

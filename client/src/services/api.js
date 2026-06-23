@@ -2,7 +2,7 @@ import axios from "axios";
 
 // Detect environment
 const BASE_URL =
-  import.meta.env.VITE_API_URL || "http://localhost:5000/api/v1";
+  import.meta.env.VITE_API_URL || "https://ecommerce-1-8s8i.onrender.com/api/v1";
 
 const API = axios.create({
   baseURL: BASE_URL,

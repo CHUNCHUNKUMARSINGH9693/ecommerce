@@ -7,6 +7,7 @@ import MainLayout from "../layout/MainLayout";
 import Home from "../auth/pages/Home";
 import Login from "../auth/pages/Login";
 import Register from "../auth/pages/Register";
+import ProductDetails from "../auth/pages/ProductDetails";
 import Dashboard from "../dashboard/pages/Dashboard";
 import Reports from "../reports/pages/Reports";
 import WorkSamples from "../samples/pages/WorkSamples"; 
@@ -38,6 +39,7 @@ const AppRoutes = () => {
       {/* New: Dynamic Category Detail Route 
           This allows users to view category details/products directly */}
       <Route path="/category/:categoryId" element={<CategoryDetail />} />
+      <Route path="/product/:id" element={<ProductDetails />} />
 
       {/* Auth Redirects */}
       <Route path="/login" element={!isAuthenticated ? <Login /> : <Navigate to="/dashboard" replace />} />

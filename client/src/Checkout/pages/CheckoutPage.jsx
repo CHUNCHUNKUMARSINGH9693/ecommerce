@@ -18,7 +18,7 @@ const CheckoutPage = () => {
     }
 
     setLoading(true);
-    setErrorMessage("");
+    setErrorMessage(""); 
 
     try {
       const token = localStorage.getItem('token'); 

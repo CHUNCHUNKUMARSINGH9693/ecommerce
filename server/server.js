@@ -51,8 +51,9 @@ app.use(
 // CORS
 app.use(
   cors({
-    origin: process.env.CLIENT_URL || "http://localhost:5173",
-    "https://ecommerce-ten-alpha-52.vercel.app",
+      origin: [
+      "http://localhost:5173",
+    ],
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE"],
   })

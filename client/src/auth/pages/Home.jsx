@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import axios from 'axios';
 import toast, { Toaster } from "react-hot-toast";
 import { Link, useNavigate } from 'react-router-dom';
@@ -82,6 +82,8 @@ const handleNewsletterSubmit = async (e) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [showSearch, setShowSearch] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
+  const [isSearching, setIsSearching] = useState(false);
   const [isBlogExpanded, setIsBlogExpanded] = useState(false);
   const [selectedPost, setSelectedPost] = useState(null);
 
@@ -172,16 +174,56 @@ const handleNewsletterSubmit = async (e) => {
   }
 };
 
-const filteredProducts = products.filter((product) => {
-  // If search is empty, show everything
-  if (!searchQuery) return true;
-  
-  const name = product.name?.toLowerCase() || "";
-  const category = product.category?.toLowerCase() || "";
-  const query = searchQuery.toLowerCase();
+const buildProductImageUrl = (productId) => `${API.defaults.baseURL}/products/product-photo/${productId}`;
 
-  return name.includes(query) || category.includes(query);
-});
+useEffect(() => {
+  if (!searchQuery.trim()) {
+    setSearchResults([]);
+    return;
+  }
+
+  const timer = setTimeout(async () => {
+    try {
+      setIsSearching(true);
+      const res = await API.get('/products/search', {
+        params: { q: searchQuery.trim() },
+      });
+      setSearchResults(res.data?.data || []);
+    } catch (error) {
+      console.error('Search failed:', error);
+      setSearchResults([]);
+    } finally {
+      setIsSearching(false);
+    }
+  }, 250);
+
+  return () => clearTimeout(timer);
+}, [searchQuery]);
+
+const filteredProducts = useMemo(() => {
+  const query = searchQuery.trim().toLowerCase();
+
+  if (!query) return [];
+
+  const localMatches = products.filter((product) => {
+    const haystack = [
+      product?.name,
+      product?.category,
+      product?.description,
+    ]
+      .filter(Boolean)
+      .join(' ')
+      .toLowerCase();
+
+    return haystack.includes(query);
+  });
+
+  if (localMatches.length > 0) {
+    return localMatches.slice(0, 8);
+  }
+
+  return searchResults.slice(0, 8);
+}, [products, searchQuery, searchResults]);
 
   // Replace your two separate useEffects with this cleaner version:
 
@@ -210,9 +252,10 @@ const filteredProducts = products.filter((product) => {
         if (catName && !uniqueCategoryMap.has(catName.toLowerCase())) {
           uniqueCategoryMap.set(catName.toLowerCase(), {
             _id: product._id,
-            name: catName,
-            subLabel: product.name,
-            image: product.image,
+            name: catName, 
+            // This pulls the first product name as a sub-label like in your reference image
+            subLabel: product.name, 
+            image: `https://ecommerce-1-8s8i.onrender.com/api/v1/products/product-photo/${product._id}`
           });
         }
       });
@@ -336,7 +379,7 @@ const handleShowMore = () => {
                     className="flex items-center gap-3 p-2 rounded-xl hover:bg-slate-100 cursor-pointer"
                   >
                     <img
-                      src={`http://localhost:5000/api/v1/products/product-photo/${product._id}`}
+                      src={buildProductImageUrl(product._id)}
                       alt={product.name}
                       className="w-12 h-12 rounded-lg object-cover"
                       onError={(e) => (e.target.src = "https://placehold.co/80")}
@@ -350,9 +393,15 @@ const handleShowMore = () => {
                   </div>
                 ))}
 
-                {searchQuery && filteredProducts.length === 0 && (
+                {searchQuery && !isSearching && filteredProducts.length === 0 && (
                   <p className="text-sm text-slate-500 text-center py-4">
                     No products found
+                  </p>
+                )}
+
+                {searchQuery && isSearching && (
+                  <p className="text-sm text-slate-500 text-center py-4">
+                    Searching...
                   </p>
                 )}
               </div>

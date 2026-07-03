@@ -11,6 +11,32 @@ const toStatusTag = (tag) => {
   return 'Normal';
 };
 
+export const searchProducts = async (req, res, next) => {
+  try {
+    const searchText = (req.query.q || req.query.search || '').trim();
+
+    const query = searchText
+      ? {
+          $or: [
+            { name: { $regex: searchText, $options: 'i' } },
+            { category: { $regex: searchText, $options: 'i' } },
+            { description: { $regex: searchText, $options: 'i' } },
+          ],
+        }
+      : {};
+
+    const products = await Product.find(query).sort({ createdAt: -1 }).limit(20);
+
+    res.status(200).json({
+      success: true,
+      count: products.length,
+      data: products,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 /**
  * @desc    Get all products (Raw)
  * @route   GET /api/v1/products

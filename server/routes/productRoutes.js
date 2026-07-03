@@ -6,7 +6,8 @@ import {
   createProduct,
   updateProduct,
   deleteProduct,
-  productPhotoController, // 1. IMPORT the new controller here
+  productPhotoController,
+  searchProducts,
 } from '../controllers/productController.js';
 import { protect } from '../middleware/authMiddleware.js';
 
@@ -25,11 +26,17 @@ router.get('/', getProducts);
 router.get('/inventory', getInventory);
 
 /**
+ * @route   GET /api/v1/products/search
+ * @desc    Search products by name, category, or description
+ */
+router.get('/search', searchProducts);
+
+/**
  * @route   GET /api/v1/products/product-photo/:pid
  * @desc    Get product photo by product ID
  */
-// 2. ADD THIS ROUTE specifically for the photos
-router.get("/product-photo/:pid", productPhotoController);
+router.get('/product-photo/:pid', productPhotoController);
+
 /**
  * @route   GET /api/v1/products/:id
  */

@@ -32,7 +32,7 @@ const Home = () => {
     e.preventDefault();
     setContactLoading(true);
     try {
-      const { data } = await axios.post("http://localhost:5000/api/v1/contact", contactFormData);
+      const { data } = await API.post("/contact", contactFormData);
       if (data.success) {
         toast.success("Message sent successfully!", {
           duration: 4000,
@@ -56,7 +56,7 @@ const [newsletterEmail, setNewsletterEmail] = useState("");
 const handleNewsletterSubmit = async (e) => {
   e.preventDefault();
   try {
-    const { data } = await axios.post("http://localhost:5000/api/v1/newsletter/subscribe", { 
+    const { data } = await API.post("/newsletter/subscribe", { 
       email: newsletterEmail 
     });
     if (data.success) {
@@ -255,7 +255,7 @@ const filteredProducts = useMemo(() => {
             name: catName, 
             // This pulls the first product name as a sub-label like in your reference image
             subLabel: product.name, 
-            image: `https://ecommerce-1-8s8i.onrender.com/api/v1/products/product-photo/${product._id}`
+            image: `${API.defaults.baseURL}/products/product-photo/${product._id}`
           });
         }
       });

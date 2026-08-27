@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import axios from 'axios';
+import API from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 import { X, Mail } from 'lucide-react';
 
@@ -29,8 +29,8 @@ const Login = () => {
     e.preventDefault();
 
     try {
-      const { data } = await axios.post(
-        'http://localhost:5000/api/v1/auth/login',
+      const { data } = await API.post(
+        '/auth/login',
         formData
       );
 
@@ -61,8 +61,8 @@ const Login = () => {
     if (!password) return;
 
     try {
-      const { data } = await axios.post(
-        'http://localhost:5000/api/v1/auth/login',
+      const { data } = await API.post(
+        '/auth/login',
         {
           email,
           password,

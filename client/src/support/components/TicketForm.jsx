@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import API from '../../services/api';
 import { CheckCircle, AlertCircle, Loader2, Send } from 'lucide-react';
 
 const TicketForm = () => {
@@ -34,8 +34,8 @@ const TicketForm = () => {
     setLoading(true);
 
     try {
-      // ✅ FIXED URL: Added /v1/ to match your server.js configuration
-      const response = await axios.post('http://localhost:5000/api/v1/support/create', formData);
+      // ✅ FIXED URL: Uses dynamic API instance
+      const response = await API.post('/support/create', formData);
 
       if (response.data.success) {
         triggerToast("Ticket Transmitted to Vault");

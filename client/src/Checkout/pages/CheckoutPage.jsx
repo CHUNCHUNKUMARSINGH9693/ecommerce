@@ -35,7 +35,7 @@ const CheckoutPage = () => {
           key: data.key_id,
           amount: data.amount,
           currency: data.currency,
-          name: "Utkarsh Home",
+          name: "Chunchun Home",
           description: "Property Consultation / Service Payment",
           order_id: data.order_id,
           handler: async function (response) {

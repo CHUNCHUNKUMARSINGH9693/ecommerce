@@ -15,7 +15,7 @@ const Sidebar = ({ onNavigate }) => {
   return (
     <aside className="flex flex-col w-full bg-[#120E0B] h-full">
       <div className="p-8">
-        <h2 className="text-[#FF6B00] font-serif text-2xl italic tracking-tighter">Utkarsh Home</h2>
+        <h2 className="text-[#FF6B00] font-serif text-2xl italic tracking-tighter">Chunchun Home</h2>
       </div>
 
       <nav className="flex-1 px-4 space-y-2">

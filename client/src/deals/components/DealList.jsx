@@ -6,7 +6,7 @@ const DealList = () => {
     {
       id: 1,
       title: "Premium Home Review",
-      brand: "Utkarsh Home",
+      brand: "Chunchun Home",
       reward: "$25.00",
       type: "High Priority",
       expiry: "2 days left",

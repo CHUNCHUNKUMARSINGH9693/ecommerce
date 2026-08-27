@@ -19,7 +19,7 @@ const API = axios.create({
 API.interceptors.request.use(
   (config) => {
     try {
-      const userData = localStorage.getItem("utkarsh_user");
+      const userData = localStorage.getItem("chunchun_user");
 
       if (userData) {
         const user = JSON.parse(userData);
@@ -59,7 +59,7 @@ API.interceptors.response.use(
       console.error("Session expired. Please login again.");
 
       // Optional auto logout
-      localStorage.removeItem("utkarsh_user");
+      localStorage.removeItem("chunchun_user");
 
       // Optional redirect
       // window.location.href = "/login";

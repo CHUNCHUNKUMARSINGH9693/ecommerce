@@ -9,7 +9,7 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Custom branding for Utkarsh Home
+        // Custom branding for Chunchun Home
         brand: {
           primary: "#4f46e5",   // Indigo 600
           secondary: "#ec4899", // Pink 500

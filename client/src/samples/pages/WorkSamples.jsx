@@ -131,7 +131,7 @@ const WorkSamples = () => {
                   <div className="mb-10">
                     <h4 className="text-white/30 uppercase text-[10px] font-bold tracking-[0.3em] mb-3">Specification</h4>
                     <p className="text-white/60 text-sm leading-relaxed">
-                      {selectedItem.description || "Premium product curated for the Utkarsh Home ecosystem, featuring high-durability materials and modern design aesthetics."}
+                      {selectedItem.description || "Premium product curated for the Chunchun Home ecosystem, featuring high-durability materials and modern design aesthetics."}
                     </p>
                   </div>
                   

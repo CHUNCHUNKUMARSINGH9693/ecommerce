@@ -7,7 +7,7 @@ const getLocalFallbackReply = (userMessage) => {
   const msg = (userMessage || '').toLowerCase();
   
   if (msg.includes('hello') || msg.includes('hi') || msg.includes('hey') || msg.includes('greetings') || msg.includes('sup')) {
-    return "Hello! I am your Utkarsh Home Concierge. How can I assist you with our luxury automated systems, e-commerce products, or work samples today?";
+    return "Hello! I am your Chunchun Home Concierge. How can I assist you with our luxury automated systems, e-commerce products, or work samples today?";
   }
   
   if (msg.includes('work') || msg.includes('sample') || msg.includes('portfolio') || msg.includes('project') || msg.includes('gallery') || msg.includes('done') || msg.includes('design') || msg.includes('installation')) {
@@ -52,7 +52,7 @@ export const chatWithAI = async (req, res) => {
     // UPDATED: Using the current Gemini 3.6 Flash model
    const model = genAI.getGenerativeModel({ model: "gemini-3.6-flash" });
    const prompt = `
-     You are the AI Concierge for 'Utkarsh Home'. 
+     You are the AI Concierge for 'Chunchun Home'. 
      If a user asks for work samples or specific products we've worked on, 
      provide a brief description and a clickable link in this format: [View Project](/dashboard/work-samples).
   

@@ -23,7 +23,7 @@ const LogoutButton = () => {
       </button>
       
       <p className="mt-4 text-center text-[9px] text-gray-600 uppercase font-black tracking-[0.3em]">
-        Utkarsh Home Security Protocol Active
+        Chunchun Home Security Protocol Active
       </p>
     </div>
   );

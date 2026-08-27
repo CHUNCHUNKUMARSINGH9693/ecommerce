@@ -1,7 +1,7 @@
 export const APP_CONFIG = {
-  NAME: 'Utkarsh Home',
+  NAME: 'Chunchun Home',
   VERSION: '1.0.0',
-  SUPPORT_EMAIL: 'support@utkarshhome.com',
+  SUPPORT_EMAIL: 'support@chunchunhome.com',
 };
 
 // Simplified to 3 main states for cleaner dashboard tracking

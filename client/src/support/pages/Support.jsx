@@ -59,7 +59,7 @@ const Support = () => {
       {/* Support Footer Info */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {[
-          { label: 'Email Support', value: 'support@utkarshhome.com' },
+          { label: 'Email Support', value: 'support@chunchunhome.com' },
           { label: 'Direct Line', value: '+91 95601 86633' },
           { label: 'Availability', value: '24/7 Premium Care' }
         ].map((item, index) => (

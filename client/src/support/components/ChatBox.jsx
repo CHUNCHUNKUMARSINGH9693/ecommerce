@@ -113,7 +113,7 @@ const ChatBox = () => {
           </button>
         </div>
         <p className="text-[8px] md:text-[9px] text-center text-gray-600 mt-3 uppercase tracking-[0.2em]">
-          Utkarsh Home Concierge • Secure Channel
+          Chunchun Home Concierge • Secure Channel
         </p>
       </div>
     </div>

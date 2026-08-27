@@ -40,7 +40,7 @@ const TopNavbar = ({ onToggleSidebar }) => {
           <Menu size={18} />
         </button>
         <div className="flex flex-col lg:hidden shrink-0">
-          <span className="text-white font-black leading-none tracking-tighter text-sm uppercase">Utkarsh</span>
+          <span className="text-white font-black leading-none tracking-tighter text-sm uppercase">Chunchun</span>
           <span className="text-orange-600 font-serif italic text-[10px] leading-none">Home</span>
         </div>
 

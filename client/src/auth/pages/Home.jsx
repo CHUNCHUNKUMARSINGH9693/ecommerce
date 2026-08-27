@@ -638,7 +638,7 @@ const handleShowMore = () => {
     {/* Header Section */}
     <div className="text-center mb-20">
       <span className="inline-block px-8 py-3 rounded-full bg-slate-50 border border-slate-200 text-sm font-black uppercase tracking-[0.2em] mb-8 shadow-sm text-blue-600">
-        About Utkarsh Store
+        About Chunchun Store
       </span>
       <h2 className="text-5xl md:text-6xl lg:text-7xl font-black uppercase tracking-[-0.02em] leading-[0.9] text-slate-950">
         Premium Experience <br className="md:hidden" />
@@ -732,7 +732,7 @@ const handleShowMore = () => {
               ✉️
             </div>
             <h4 className="font-black text-slate-900 uppercase text-xs tracking-widest mb-2">Email Support</h4>
-            <p className="text-slate-500 text-sm">support@utkarshhome.com</p>
+            <p className="text-slate-500 text-sm">support@chunchunhome.com</p>
           </div>
         </div>
 

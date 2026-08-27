@@ -9,7 +9,7 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const storedUser = localStorage.getItem('utkarsh_user');
+    const storedUser = localStorage.getItem('chunchun_user');
     const token = localStorage.getItem('token');
     if (storedUser && token) {
       setUser(JSON.parse(storedUser));
@@ -19,14 +19,14 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const login = (userData, token) => {
-    localStorage.setItem('utkarsh_user', JSON.stringify(userData));
+    localStorage.setItem('chunchun_user', JSON.stringify(userData));
     localStorage.setItem('token', token);
     setUser(userData);
     setIsAuthenticated(true); // This triggers the redirect in AppRoutes
   };
 
   const logout = () => {
-    localStorage.removeItem('utkarsh_user');
+    localStorage.removeItem('chunchun_user');
     localStorage.removeItem('token');
     setUser(null);
     setIsAuthenticated(false); // This triggers the redirect to Home/Login

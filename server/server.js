@@ -21,6 +21,7 @@ import productRoutes from "./routes/productRoutes.js";
 import contactRoutes from './routes/contactRoutes.js';
 import inventoryRoutes from "./routes/inventoryRoutes.js";
 import paymentRoutes from "./routes/paymentRoutes.js"; // 1. Added Payment Routes
+import aiRoutes from "./routes/aiRoutes.js";
 
 // Middlewares
 import { notFound, errorHandler } from "./middleware/errorMiddleware.js";
@@ -100,6 +101,7 @@ app.use("/api/v1/products", productRoutes);
 app.use('/api/v1/contact', contactRoutes);
 app.use("/api/v1/inventory", inventoryRoutes);
 app.use("/api/v1/payments", paymentRoutes); // 3. Registered Payment Routes
+app.use("/api/v1/ai", aiRoutes);
 
 
 

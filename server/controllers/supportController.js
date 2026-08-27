@@ -1,11 +1,33 @@
 import SupportTicket from '../models/SupportTicket.js';
+import Product from '../models/Product.js';
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
-const getLocalFallbackReply = (userMessage) => {
+const getLocalFallbackReply = async (userMessage) => {
   const msg = (userMessage || '').toLowerCase();
   
+  // 1. Try to find products matching keywords in database
+  try {
+    const products = await Product.find({}, 'name price category description');
+    const matches = products.filter(p => 
+      p.name.toLowerCase().includes(msg) || 
+      p.category.toLowerCase().includes(msg) ||
+      p.description.toLowerCase().includes(msg)
+    );
+    if (matches.length > 0) {
+      let reply = "I found these matching products in our Chunchun Home catalog:\n\n";
+      matches.slice(0, 3).forEach(p => {
+        reply += `- [${p.name}](/product/${p._id}) - $${p.price}\n  ${p.description}\n\n`;
+      });
+      reply += "Click on the product name to view full specifications or add it to your cart!";
+      return reply;
+    }
+  } catch (err) {
+    console.error("Local fallback products query failed:", err);
+  }
+
+  // 2. Direct keyword checks for project sections
   if (msg.includes('hello') || msg.includes('hi') || msg.includes('hey') || msg.includes('greetings') || msg.includes('sup')) {
     return "Hello! I am your Chunchun Home Concierge. How can I assist you with our luxury automated systems, e-commerce products, or work samples today?";
   }
@@ -49,17 +71,46 @@ export const chatWithAI = async (req, res) => {
       return res.status(400).json({ success: false, message: "Message is required" });
     }
 
-    // UPDATED: Using the current Gemini 3.6 Flash model
-   const model = genAI.getGenerativeModel({ model: "gemini-3.6-flash" });
-   const prompt = `
-     You are the AI Concierge for 'Chunchun Home'. 
-     If a user asks for work samples or specific products we've worked on, 
-     provide a brief description and a clickable link in this format: [View Project](/dashboard/work-samples).
-  
-     Example: "You can see our luxury smart home integration here: [View Work Sample](/dashboard/work-samples)"
-  
-     User Message: ${message}
-   `;
+    // 1. Fetch available products dynamically from MongoDB for AI context
+    let productsList = [];
+    try {
+      productsList = await Product.find({}, 'name price category description');
+    } catch (dbError) {
+      console.error("Failed to fetch products for AI context:", dbError);
+    }
+
+    const productsContextString = productsList.map(p => 
+      `- Product: "${p.name}" (ID: ${p._id}) | Category: "${p.category}" | Price: $${p.price} | Description: "${p.description}"`
+    ).join('\n');
+
+    // 2. Generate prompt
+    const prompt = `
+      You are the AI Concierge for 'Chunchun Home', a luxury smart home and e-commerce platform.
+      Your tone is helpful, friendly, and professional.
+      
+      Current Shop Context:
+      - Available Products in the store database:
+      ${productsContextString || "No products currently listed."}
+      
+      Rules for recommending products:
+      - If the user asks about or searches for a product (or category of products), you MUST suggest relevant matching products from the "Available Products" list above.
+      - For every product you recommend, you MUST provide a clickable link to it in this exact markdown format: [Product Name](/product/PRODUCT_ID). Do NOT use generic links.
+      
+      Rules for general e-commerce inquiries:
+      - If they mention order issues, settings, profile, or their cart/checkout, guide them to these specific links:
+        * Shopping Cart & Checkout: [My Cart](/dashboard/cart)
+        * Work Samples / Portfolio: [Work Samples](/dashboard/samples)
+        * Support Ticket Portal: [Support Dashboard](/dashboard/support)
+        * Referral Program: [Refer & Earn](/dashboard/referrals)
+        * Resident Profile: [My Profile](/dashboard/profile)
+        * Analytics/Stats: [Reports & Analytics](/dashboard/reports)
+      
+      - General Questions: Answer questions about smart home automation, design aesthetics, or the store politely using "Chunchun Home" as the company name.
+      
+      User Message: ${message}
+    `;
+
+    const model = genAI.getGenerativeModel({ model: "gemini-3.6-flash" });
     const result = await model.generateContent(prompt);
     const response = await result.response;
     
@@ -85,7 +136,7 @@ export const chatWithAI = async (req, res) => {
       });
     } catch (fallbackError) {
       console.error("All Gemini API Models Failed. Using local fallback.");
-      const reply = getLocalFallbackReply(message);
+      const reply = await getLocalFallbackReply(message);
       return res.status(200).json({ 
         success: true, 
         reply,

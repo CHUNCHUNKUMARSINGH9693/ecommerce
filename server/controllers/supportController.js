@@ -4,30 +4,38 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
-const getLocalFallbackReply = async (userMessage) => {
+const findMatchingProducts = async (messageText) => {
+  try {
+    const cleanMsg = (messageText || '').toLowerCase();
+    const products = await Product.find({});
+    
+    const queryWords = cleanMsg.split(/\s+/).filter(w => w.length > 2);
+    
+    return products.filter(product => {
+      const name = product.name.toLowerCase();
+      const cat = product.category.toLowerCase();
+      
+      if (cleanMsg.includes(name) || cleanMsg.includes(cat)) return true;
+      return queryWords.some(word => name.includes(word) || cat.includes(word));
+    }).slice(0, 3);
+  } catch (err) {
+    console.error("Error finding matching products:", err);
+    return [];
+  }
+};
+
+const getLocalFallbackReply = async (userMessage, matchedProducts = []) => {
   const msg = (userMessage || '').toLowerCase();
   
-  // 1. Try to find products matching keywords in database
-  try {
-    const products = await Product.find({}, 'name price category description');
-    const matches = products.filter(p => 
-      p.name.toLowerCase().includes(msg) || 
-      p.category.toLowerCase().includes(msg) ||
-      p.description.toLowerCase().includes(msg)
-    );
-    if (matches.length > 0) {
-      let reply = "I found these matching products in our Chunchun Home catalog:\n\n";
-      matches.slice(0, 3).forEach(p => {
-        reply += `- [${p.name}](/product/${p._id}) - $${p.price}\n  ${p.description}\n\n`;
-      });
-      reply += "Click on the product name to view full specifications or add it to your cart!";
-      return reply;
-    }
-  } catch (err) {
-    console.error("Local fallback products query failed:", err);
+  if (matchedProducts.length > 0) {
+    let reply = "I found these matching products in our Chunchun Home catalog:\n\n";
+    matchedProducts.forEach(p => {
+      reply += `- **${p.name}** - $${p.price}\n  ${p.description}\n\n`;
+    });
+    reply += "You can see the product details and add them to your cart directly from the cards below!";
+    return reply;
   }
 
-  // 2. Direct keyword checks for project sections
   if (msg.includes('hello') || msg.includes('hi') || msg.includes('hey') || msg.includes('greetings') || msg.includes('sup')) {
     return "Hello! I am your Chunchun Home Concierge. How can I assist you with our luxury automated systems, e-commerce products, or work samples today?";
   }
@@ -64,7 +72,7 @@ const getLocalFallbackReply = async (userMessage) => {
 };
 
 export const chatWithAI = async (req, res) => {
-  const { message } = req.body; // Move this outside the try block for fallback access
+  const { message } = req.body;
 
   try {
     if (!message) {
@@ -83,7 +91,10 @@ export const chatWithAI = async (req, res) => {
       `- Product: "${p.name}" (ID: ${p._id}) | Category: "${p.category}" | Price: $${p.price} | Description: "${p.description}"`
     ).join('\n');
 
-    // 2. Generate prompt
+    // 2. Fetch matched products for direct card rendering
+    const matchedProducts = await findMatchingProducts(message);
+
+    // 3. Generate prompt
     const prompt = `
       You are the AI Concierge for 'Chunchun Home', a luxury smart home and e-commerce platform.
       Your tone is helpful, friendly, and professional.
@@ -117,6 +128,7 @@ export const chatWithAI = async (req, res) => {
     res.status(200).json({ 
       success: true, 
       reply: response.text(),
+      products: matchedProducts,
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
     });
 
@@ -129,17 +141,21 @@ export const chatWithAI = async (req, res) => {
       const result = await fallbackModel.generateContent(message);
       const response = await result.response;
       
+      const matchedProducts = await findMatchingProducts(message);
       return res.status(200).json({ 
         success: true, 
         reply: response.text(),
+        products: matchedProducts,
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       });
     } catch (fallbackError) {
       console.error("All Gemini API Models Failed. Using local fallback.");
-      const reply = await getLocalFallbackReply(message);
+      const matchedProducts = await findMatchingProducts(message);
+      const reply = await getLocalFallbackReply(message, matchedProducts);
       return res.status(200).json({ 
         success: true, 
         reply,
+        products: matchedProducts,
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       });
     }

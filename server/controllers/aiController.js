@@ -4,27 +4,39 @@ import Product from '../models/Product.js';
 // Initialize with the key
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
-const getLocalFallbackReply = async (userMessage) => {
+const findMatchingProducts = async (messageText) => {
+  try {
+    const cleanMsg = (messageText || '').toLowerCase();
+    const products = await Product.find({});
+    
+    // Split message into words of length > 2 to find keywords
+    const queryWords = cleanMsg.split(/\s+/).filter(w => w.length > 2);
+    
+    return products.filter(product => {
+      const name = product.name.toLowerCase();
+      const cat = product.category.toLowerCase();
+      
+      // Match if the message contains the full name/category, or matches keywords
+      if (cleanMsg.includes(name) || cleanMsg.includes(cat)) return true;
+      return queryWords.some(word => name.includes(word) || cat.includes(word));
+    }).slice(0, 3); // limit to top 3 products
+  } catch (err) {
+    console.error("Error finding matching products:", err);
+    return [];
+  }
+};
+
+const getLocalFallbackReply = async (userMessage, matchedProducts = []) => {
   const msg = (userMessage || '').toLowerCase();
 
-  // 1. Try to find products matching keywords in database
-  try {
-    const products = await Product.find({}, 'name price category description');
-    const matches = products.filter(p => 
-      p.name.toLowerCase().includes(msg) || 
-      p.category.toLowerCase().includes(msg) ||
-      p.description.toLowerCase().includes(msg)
-    );
-    if (matches.length > 0) {
-      let reply = "I found these matching products in our Chunchun Home catalog:\n\n";
-      matches.slice(0, 3).forEach(p => {
-        reply += `- [${p.name}](/product/${p._id}) - $${p.price}\n  ${p.description}\n\n`;
-      });
-      reply += "Click on the product name to view full specifications or add it to your cart!";
-      return reply;
-    }
-  } catch (err) {
-    console.error("Local fallback products query failed:", err);
+  // 1. If we have matched products, present them locally
+  if (matchedProducts.length > 0) {
+    let reply = "I found these matching products in our Chunchun Home catalog:\n\n";
+    matchedProducts.forEach(p => {
+      reply += `- **${p.name}** - $${p.price}\n  ${p.description}\n\n`;
+    });
+    reply += "You can see the product details and add them to your cart directly from the cards below!";
+    return reply;
   }
 
   // 2. Direct keyword checks for project sections
@@ -83,7 +95,10 @@ export const getAIResponse = async (req, res) => {
       `- Product: "${p.name}" (ID: ${p._id}) | Category: "${p.category}" | Price: $${p.price} | Description: "${p.description}"`
     ).join('\n');
 
-    // 2. Generate prompt
+    // 2. Fetch matched products for direct card rendering
+    const matchedProducts = await findMatchingProducts(message);
+
+    // 3. Generate prompt
     const contextInfo = productContext 
       ? `The user is currently looking at: ${productContext.name} priced at $${productContext.price}.`
       : "";
@@ -123,6 +138,7 @@ export const getAIResponse = async (req, res) => {
     res.status(200).json({
       success: true,
       reply: text,
+      products: matchedProducts,
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
     });
 
@@ -133,10 +149,12 @@ export const getAIResponse = async (req, res) => {
     }
     
     // Execute smart local fallback response instead of failing
-    const reply = await getLocalFallbackReply(req.body.message);
+    const matchedProducts = await findMatchingProducts(req.body.message);
+    const reply = await getLocalFallbackReply(req.body.message, matchedProducts);
     res.status(200).json({
       success: true,
       reply,
+      products: matchedProducts,
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
     });
   }

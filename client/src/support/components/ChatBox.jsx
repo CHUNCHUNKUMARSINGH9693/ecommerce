@@ -1,7 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import API from '../../services/api'; 
+import { useAuth } from '../../context/AuthContext';
+import { useCart } from '../../context/CartContext';
 
 const ChatBox = () => {
+  const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
+  const [cart, setCart] = useCart();
   const [messages, setMessages] = useState([
     { sender: 'system', text: 'Welcome to Shop, How can i assist you?', time: '10:00 AM' }
   ]);
@@ -14,6 +20,17 @@ const ChatBox = () => {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
   }, [messages, isTyping]);
+
+  const handleAddToCart = (e, product) => {
+    if (e) e.stopPropagation();
+    if (!isAuthenticated) {
+      navigate('/login', { state: { from: '/dashboard/cart' } });
+    } else {
+      // Logic to add to cart context
+      setCart([...cart, product]);
+      alert(`✅ ${product.name} added to cart!`);
+    }
+  };
 
   const handleSendMessage = async () => {
     if (!inputValue.trim() || isTyping) return;
@@ -30,14 +47,13 @@ const ChatBox = () => {
     setIsTyping(true);
 
     try {
-      // UPDATED: Ensure this matches your router.post('/ai-chat', chatWithAI) in supportRoutes.js
-      // If your axios base URL doesn't include /v1, use: API.post('/v1/support/ai-chat', ...)
       const { data } = await API.post('/support/ai-chat', { message: currentInput });
 
       if (data.success) {
         setMessages((prev) => [...prev, {
           sender: 'system',
           text: data.reply,
+          products: data.products || [],
           time: data.timestamp || new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
         }]);
       }
@@ -73,6 +89,63 @@ const ChatBox = () => {
               }`}
             >
               <p className="text-xs md:text-sm leading-relaxed font-medium">{msg.text}</p>
+              
+              {/* Product Cards Layout */}
+              {msg.products && msg.products.length > 0 && (
+                <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+                  {msg.products.map((product) => (
+                    <div 
+                      key={product._id} 
+                      className="bg-black/40 backdrop-blur-md rounded-2xl p-3 border border-white/10 flex flex-col gap-2 hover:border-orange-500/50 transition-all shadow-lg text-left"
+                    >
+                      {/* Image */}
+                      <div className="aspect-video w-full rounded-xl overflow-hidden bg-black/20 relative group">
+                        <img 
+                          src={`${API.defaults.baseURL}/products/product-photo/${product._id}`} 
+                          alt={product.name}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                          onError={(e) => {
+                            e.target.onerror = null; 
+                            e.target.src = product.image || "https://images.unsplash.com/photo-1523275335684-37898b6baf30";
+                          }}
+                        />
+                        {product.tag && product.tag !== 'none' && (
+                          <span className="absolute top-2 left-2 px-2 py-0.5 rounded-lg bg-orange-600 text-white text-[8px] font-black uppercase tracking-wider">
+                            {product.tag}
+                          </span>
+                        )}
+                      </div>
+                      
+                      {/* Details */}
+                      <div className="flex flex-col flex-1">
+                        <span className="text-[9px] uppercase font-bold text-orange-500 tracking-wider">
+                          {product.category}
+                        </span>
+                        <h4 className="text-xs font-bold text-white mt-0.5 line-clamp-1">
+                          {product.name}
+                        </h4>
+                        <p className="text-[10px] text-gray-400 mt-1 line-clamp-2 leading-relaxed">
+                          {product.description}
+                        </p>
+                      </div>
+                      
+                      {/* Action */}
+                      <div className="flex items-center justify-between mt-1 pt-2 border-t border-white/5">
+                        <span className="text-sm font-black text-white">
+                          ${product.price}
+                        </span>
+                        <button
+                          onClick={(e) => handleAddToCart(e, product)}
+                          className="bg-orange-600 hover:bg-orange-500 active:scale-95 text-white font-bold text-[9px] uppercase tracking-wider py-1.5 px-3 rounded-lg transition-all"
+                        >
+                          Add to Cart
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
               <span className="text-[9px] md:text-[10px] mt-2 block opacity-60 uppercase tracking-widest font-bold">
                 {msg.time}
               </span>

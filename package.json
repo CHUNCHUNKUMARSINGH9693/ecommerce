@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "postinstall": "npm install --prefix server",
+    "postinstall": "node -e \"if (!process.env.VERCEL) { require('child_process').execSync('npm install --prefix server', { stdio: 'inherit' }); }\"",
     "build": "npm install --prefix server",
     "start": "npm start --prefix server"
   }

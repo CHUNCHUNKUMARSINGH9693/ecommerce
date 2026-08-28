@@ -7,8 +7,7 @@ A full-stack **MERN E-Commerce application** built with React, Node.js, Express.
 ## 🌐 Live Demo
 
 **Frontend:**
-https://ecommerce-sigma-sable-42.vercel.app/
-
+https://ecommerce-tau-roan.vercel.app/
 **Backend API:**
 https://ecommerce-1-d1j4.onrender.com
 

@@ -2,7 +2,7 @@
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import Product from './models/Product.js';
-import { PROPERTY_CATEGORIES } from './utils/constants.js'; // Import your allowed categories
+import { CATEGORIES } from './utils/constants.js'; // Import your allowed categories
 
 dotenv.config();
 
@@ -21,16 +21,17 @@ const seedFromAPI = async () => {
     const baseProducts = data.products.map(p => {
       // Logic: If the external category isn't in your allowed list, 
       // default it to the first valid category (usually 'Electronics' or 'Fashion')
-      const validCategory = PROPERTY_CATEGORIES.includes(p.category) 
+      const validCategory = CATEGORIES.includes(p.category) 
         ? p.category 
-        : PROPERTY_CATEGORIES[0]; 
+        : CATEGORIES[0]; 
 
       return {
         name: p.title,
         price: p.price,
         category: validCategory, // This fixes the Enum validation error
         image: p.thumbnail,
-        tag: p.rating > 4.5 ? 'best-seller' : 'new-arrival'
+        tag: p.rating > 4.5 ? 'best-seller' : 'new-arrival',
+        description: p.description || "No description provided"
       };
     });
 

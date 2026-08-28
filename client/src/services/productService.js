@@ -42,15 +42,18 @@ export const productService = {
 
       const productList = res.data.data || res.data.products || [];
 
-      return productList.slice(0, limit).map((p) => ({
-  id: p._id,
-  name: p.name,
-  price: Number(p.price),
-  category: p.category || "General",
-  image: p.image,
-  tag: p.tag,
-  stock: p.stock,
-}));
+      return productList
+        .filter((p) => p.tag === "best-seller")
+        .slice(0, limit)
+        .map((p) => ({
+          id: p._id,
+          name: p.name,
+          price: Number(p.price),
+          category: p.category || "General",
+          image: p.image,
+          tag: p.tag,
+          stock: p.stock,
+        }));
     } catch (error) {
       console.error("getBestSellers error:", error);
       return [];

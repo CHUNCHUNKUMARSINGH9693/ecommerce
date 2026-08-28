@@ -1,13 +1,5 @@
 import mongoose from "mongoose";
-
-const CATEGORIES = [
-  "Electronics",
-  "Fashion",
-  "Beauty",
-  "Home",
-  "Grocery",
-  "Luxury",
-];
+import { CATEGORIES } from "../utils/constants.js";
 
 const productSchema = new mongoose.Schema(
   {

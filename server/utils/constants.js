@@ -14,6 +14,8 @@ export const CATEGORIES = [
   "Home",
   "Grocery",
   "Luxury",
+  "Furniture",
+  "Health",
 ];
 
 // Labels for frontend UI

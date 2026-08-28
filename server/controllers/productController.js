@@ -100,11 +100,11 @@ export const getProductById = async (req, res, next) => {
  */
 export const createProduct = async (req, res, next) => {
   try {
-    const { name, price, category, image, tag } = req.body;
+    const { name, price, category, image, tag, description } = req.body;
 
-    if (!name || price === undefined || !category) {
+    if (!name || price === undefined || !category || !description) {
       res.status(400);
-      throw new Error('Please provide name, price, and category');
+      throw new Error('Please provide name, price, category, and description');
     }
 
     const product = await Product.create({ 
@@ -112,7 +112,8 @@ export const createProduct = async (req, res, next) => {
       price: Number(price), 
       category, 
       image, 
-      tag: tag || 'none' 
+      tag: tag || 'none',
+      description
     });
 
     res.status(201).json({ success: true, data: product });

@@ -1,5 +1,3 @@
-https://ecommerce-tau-roan.vercel.app/
-
 # 🛒 E-Commerce Admin & Shopping Platform
 
 A full-stack **MERN E-Commerce application** built with React, Node.js, Express.js, and MongoDB. The project provides a complete shopping experience with product management, user authentication, product browsing, and backend APIs.

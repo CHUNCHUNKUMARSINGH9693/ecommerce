@@ -434,8 +434,7 @@ Full Stack / MERN Developer
 
 * GitHub: https://github.com/CHUNCHUNKUMARSINGH9693
 * Portfolio: Add your portfolio URL here
-* LinkedIn: Add your LinkedIn URL here
-
+* LinkedIn: https://www.linkedin.com/in/chunchun-kumar-singh-a05478282/
 ---
 
 ## ⭐ Support

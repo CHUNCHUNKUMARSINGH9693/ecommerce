@@ -40,6 +40,7 @@ const AppRoutes = () => {
           This allows users to view category details/products directly */}
       <Route path="/category/:categoryId" element={<CategoryDetail />} />
       <Route path="/product/:id" element={<ProductDetails />} />
+      <Route path="/products/:id" element={<ProductDetails />} />
 
       {/* Auth Redirects */}
       <Route path="/login" element={!isAuthenticated ? <Login /> : <Navigate to="/dashboard" replace />} />

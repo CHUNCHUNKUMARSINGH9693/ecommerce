@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import API from '../../services/api';
 
 // Razorpay loads checkout via global `Razorpay` SDK.
 // Ensure razorpay script is available in your index.html.
@@ -29,7 +29,7 @@ const CheckoutForm = ({ totalAmount }) => {
       await loadRazorpayScript();
 
       // 1) Create Razorpay order on the backend
-      const { data } = await axios.post('/api/v1/payments/razorpay-order', {
+      const { data } = await API.post('/payments/razorpay-order', {
         amount: totalAmount,
         currency: 'INR',
       });
@@ -49,7 +49,7 @@ const CheckoutForm = ({ totalAmount }) => {
         handler: async function (response) {
           try {
             // 3) Verify payment on backend
-            const verifyRes = await axios.post('/api/v1/payments/verify', {
+            const verifyRes = await API.post('/payments/verify', {
               razorpay_order_id: response.razorpay_order_id,
               razorpay_payment_id: response.razorpay_payment_id,
               razorpay_signature: response.razorpay_signature,

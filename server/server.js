@@ -52,10 +52,6 @@ app.use(
 // CORS
 app.use(
   cors({
-          origin: [
-      "http://localhost:5173",
-      "http://localhost:5174",
-    ],
     origin: function (origin, callback) {
       const allowedOrigins = [
         "http://localhost:5173",

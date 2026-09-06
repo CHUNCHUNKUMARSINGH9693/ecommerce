@@ -1,15 +1,32 @@
 import axios from "axios";
 
-// Detect environment
-const BASE_URL =
-  import.meta.env.VITE_API_URL || "http://localhost:5000/api/v1";
+// Detect environment and configure production backend fallback
+const getBaseUrl = () => {
+  const rawUrl = import.meta.env.VITE_API_URL;
+  if (rawUrl && typeof rawUrl === "string" && rawUrl.trim()) {
+    let url = rawUrl.trim();
+    if (!url.endsWith("/api/v1")) {
+      url = url.replace(/\/$/, "") + "/api/v1";
+    }
+    return url;
+  }
+
+  // Fallback: in production (e.g. deployed on Vercel), use Render backend
+  if (import.meta.env.PROD) {
+    return "https://ecommerce-1-d1j4.onrender.com/api/v1";
+  }
+
+  return "http://localhost:5000/api/v1";
+};
+
+const BASE_URL = getBaseUrl();
 
 const API = axios.create({
   baseURL: BASE_URL,
   headers: {
     "Content-Type": "application/json",
   },
-  timeout: 10000,
+  timeout: 60000, // 60s to account for Render free-tier cold starts
 });
 
 // ======================
